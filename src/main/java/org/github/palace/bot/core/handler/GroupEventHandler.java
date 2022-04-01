@@ -32,7 +32,7 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
         String miraiCode = chain.serializeToMiraiCode();
 
         // at机器人 默认 at后面就是命令
-        if (MiraiCodeUtil.isAtMe(miraiCode)) {
+        if (MiraiCodeUtil.isAtMe(miraiCode, subject.getBot().getId())) {
             AbstractCommand command = commandManager.matchCommand(chain.get(2).contentToString().trim());
             if (command != null) {
                 CommandSession commandSession = commandSessionHelper.put(messageSource, command);
