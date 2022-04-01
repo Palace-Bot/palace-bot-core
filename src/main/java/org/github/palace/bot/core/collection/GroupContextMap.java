@@ -1,7 +1,7 @@
 package org.github.palace.bot.core.collection;
 
 import lombok.val;
-import org.github.palace.bot.core.cli.CommandLine;
+import org.github.palace.bot.core.cli.CommandSession;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,27 +10,27 @@ import java.util.Map;
  * @author JHY
  * @date 2022/3/25 8:24
  */
-public class GroupContextMap extends HashMap<Long, Map<Long, MemberContextQueue<CommandLine>>> {
+public class GroupContextMap extends HashMap<Long, Map<Long, MemberContextQueue<CommandSession>>> {
 
-    public CommandLine put(Long group, Long qq, CommandLine commandLine) {
+    public CommandSession put(Long group, Long qq, CommandSession commandSession) {
         val memberMap = this.getOrDefault(group, new HashMap<>(16));
         val memberCommandQueue = memberMap.getOrDefault(qq, new MemberContextQueue<>(100));
-        memberCommandQueue.add(commandLine);
+        memberCommandQueue.add(commandSession);
 
         super.put(group, memberMap);
         memberMap.put(qq, memberCommandQueue);
 
-        return commandLine;
+        return commandSession;
     }
 
-    public CommandLine get(Long group, Long qq, CommandLine.State state) {
+    public CommandSession get(Long group, Long qq, CommandSession.State state) {
         val memberMap = this.get(group);
 
         if (memberMap == null) return null;
-        MemberContextQueue<CommandLine> commandLines = memberMap.get(qq);
+        MemberContextQueue<CommandSession> commandSessions = memberMap.get(qq);
 
-        if (commandLines == null) return null;
-        return commandLines.get(state);
+        if (commandSessions == null) return null;
+        return commandSessions.get(state);
     }
 
 }

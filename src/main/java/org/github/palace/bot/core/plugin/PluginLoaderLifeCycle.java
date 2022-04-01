@@ -1,6 +1,8 @@
-package org.github.palace.bot.plugin;
+package org.github.palace.bot.core.plugin;
 
 /**
+ * 插件生命周期
+ *
  * @author JHY
  * @date 2022/3/30 16:14
  */

@@ -1,6 +1,9 @@
-package org.github.palace.bot.plugin;
+package org.github.palace.bot.core.plugin;
 
+import lombok.EqualsAndHashCode;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +20,13 @@ import java.util.jar.Manifest;
  * @author JHY
  * @date 2022/3/30 16:07
  */
-public final class PluginClassLoader {
+@EqualsAndHashCode
+public final class PluginClassLoader implements PluginLoader {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PluginClassLoader.class);
+
+    /**
+     * 插件主类名称
+     */
     private String mainClass;
     private final URLClassLoader classLoader;
 
@@ -82,4 +91,18 @@ public final class PluginClassLoader {
         return oldLoader;
     }
 
+    @Nullable
+    @Override
+    public Plugin load() {
+        try {
+            Class<?> clazz = this.loadMainClass();
+            Object obj = clazz.getDeclaredConstructor().newInstance();
+            if (obj instanceof Plugin) {
+                return (Plugin) obj;
+            }
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        }
+        return null;
+    }
 }

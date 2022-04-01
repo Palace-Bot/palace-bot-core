@@ -4,10 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
+ * 命令执行状态
+ *
  * @author JHY
  * @date 2022/3/25 7:31
  */
-public class CommandLine {
+public class CommandSession {
 
     @Getter
     @Setter
@@ -23,37 +25,37 @@ public class CommandLine {
         CRASH
     }
 
-    public CommandLine(Command command) {
+    public CommandSession(Command command) {
         this.command = command;
     }
 
-    public CommandLine(Command command, State state) {
+    public CommandSession(Command command, State state) {
         this.command = command;
         this.state = state;
     }
 
-    public CommandLine runnable() {
-        this.setState(CommandLine.State.RUNNABLE);
+    public CommandSession runnable() {
+        this.setState(CommandSession.State.RUNNABLE);
         return this;
     }
 
-    public CommandLine prepare() {
-        this.setState(CommandLine.State.PREPARE);
+    public CommandSession prepare() {
+        this.setState(CommandSession.State.PREPARE);
         return this;
     }
 
-    public CommandLine crash() {
-        this.setState(CommandLine.State.CRASH);
+    public CommandSession crash() {
+        this.setState(CommandSession.State.CRASH);
         return this;
     }
 
-    public CommandLine finish() {
-        this.setState(CommandLine.State.FINISH);
+    public CommandSession finish() {
+        this.setState(CommandSession.State.FINISH);
         return this;
     }
-
 
     private void setState(State state) {
         this.state = state;
     }
+
 }

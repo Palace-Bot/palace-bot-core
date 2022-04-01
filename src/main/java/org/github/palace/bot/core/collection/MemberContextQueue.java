@@ -1,7 +1,7 @@
 package org.github.palace.bot.core.collection;
 
 
-import org.github.palace.bot.core.cli.CommandLine;
+import org.github.palace.bot.core.cli.CommandSession;
 
 import java.util.*;
 
@@ -9,7 +9,7 @@ import java.util.*;
  * @author JHY
  * @date 2022/3/25 7:27
  */
-public final class MemberContextQueue<T extends CommandLine> extends LinkedList<T> {
+public final class MemberContextQueue<T extends CommandSession> extends LinkedList<T> {
     private final int initialCapacity;
 
     public MemberContextQueue(int initialCapacity) {
@@ -31,7 +31,7 @@ public final class MemberContextQueue<T extends CommandLine> extends LinkedList<
      * @param state 状态
      * @return element
      */
-    public T get(CommandLine.State state) {
+    public T get(CommandSession.State state) {
         for (int i = super.size() - 1; i >= 0; i--) {
             T element = super.get(i);
             if (element.getState() == state) {

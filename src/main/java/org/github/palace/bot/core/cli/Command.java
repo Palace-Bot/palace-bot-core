@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
+ * 命令基本信息
+ *
  * @author JHY
  * @date 2022/3/27 9:45
  */
