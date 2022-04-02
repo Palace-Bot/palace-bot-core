@@ -1,7 +1,9 @@
 package org.github.palace.bot.core.cli.support;
 
 import net.mamoe.mirai.message.data.MessageChain;
+import net.mamoe.mirai.message.data.SingleMessage;
 import org.github.palace.bot.core.cli.AbstractCommand;
+import org.github.palace.bot.core.cli.CommandSender;
 import org.github.palace.bot.core.plugin.Plugin;
 import org.github.palace.bot.core.plugin.PluginLoader;
 import org.github.palace.bot.core.plugin.PluginRegister;
@@ -33,8 +35,24 @@ public class DefaultCommandManager implements CommandManager {
     }
 
     @Override
-    public void executeCommand(AbstractCommand command, MessageChain arguments) {
+    public void executeCommand(CommandSender commandSender, AbstractCommand command, MessageChain chain) {
+        Object[] args = new Object[5 + chain.size()];
 
+        args[0] = commandSender;
+        args[1] = commandSender.getBot();
+        args[2] = commandSender.getSubject();
+        args[3] = commandSender.getUser();
+        args[4] = commandSender.getName();
+
+        int current = 5;
+        for (SingleMessage singleMessage : chain) {
+            args[current++] = singleMessage;
+        }
+
+        InvocableMethod invocableMethod = ParameterMapping.mapping(command, args);
+        if (invocableMethod != null) {
+            invocableMethod.doInvoke();
+        }
     }
 
 
@@ -47,7 +65,7 @@ public class DefaultCommandManager implements CommandManager {
             for (Map.Entry<PluginLoader, Plugin> entry : pluginCache.entrySet()) {
                 Plugin plugin = entry.getValue();
                 for (AbstractCommand command : plugin.getCommands()) {
-                    if (commandName.equals(command.getPrimaryName())) {
+                    if (commandName.equals(commandPrefix + command.getPrimaryName())) {
                         matchList.add(command);
                     }
                 }

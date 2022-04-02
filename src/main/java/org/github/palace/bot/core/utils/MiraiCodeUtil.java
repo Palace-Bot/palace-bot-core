@@ -10,8 +10,8 @@ public final class MiraiCodeUtil {
     private MiraiCodeUtil() {
     }
 
-    public static boolean isAtMe(String mraiCode, Long botQQ) {
-        return mraiCode.contains("[" + AT_ME_MIRAI_CODE + botQQ + "]");
+    public static boolean isAtMe(String mraiCode, Long botId) {
+        return mraiCode.contains("[" + AT_ME_MIRAI_CODE + botId + "]");
     }
 
     public static boolean isCommandLine(String mraiCode) {

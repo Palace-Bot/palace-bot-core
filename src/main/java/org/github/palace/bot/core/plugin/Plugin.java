@@ -1,10 +1,7 @@
 package org.github.palace.bot.core.plugin;
 
 import lombok.Getter;
-import org.github.palace.bot.core.annotation.CommandHandler;
 import org.github.palace.bot.core.cli.AbstractCommand;
-
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,18 +51,4 @@ public abstract class Plugin implements PluginLoaderLifeCycle {
         return this;
     }
 
-    private boolean commandHandlerParse(AbstractCommand command) {
-        Class<? extends AbstractCommand> clazz = command.getClass();
-        Method[] methods = clazz.getMethods();
-
-        boolean successful = false;
-        for (Method method : methods) {
-            CommandHandler commandHandler = method.getAnnotation(CommandHandler.class);
-            if (commandHandler != null) {
-                command.putParameterTypes(method, method.getParameterTypes());
-                successful = true;
-            }
-        }
-        return successful;
-    }
 }

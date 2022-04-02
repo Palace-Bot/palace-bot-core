@@ -5,6 +5,7 @@ import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.message.data.*;
 import org.github.palace.bot.core.cli.AbstractCommand;
+import org.github.palace.bot.core.cli.CommandSender;
 import org.github.palace.bot.core.cli.CommandSession;
 import org.github.palace.bot.core.cli.support.CommandSessionHelper;
 import org.github.palace.bot.core.cli.support.CommandManager;
@@ -39,7 +40,7 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
 
                 Exception exception = null;
                 try {
-                    commandManager.executeCommand(command, chain);
+                    commandManager.executeCommand(CommandSender.toCommandSender(event), command, chain);
                 } catch (Exception e) {
                     exception = e;
                 }

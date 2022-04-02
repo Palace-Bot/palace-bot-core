@@ -2,6 +2,7 @@ package org.github.palace.bot.core.cli.support;
 
 import net.mamoe.mirai.message.data.MessageChain;
 import org.github.palace.bot.core.cli.AbstractCommand;
+import org.github.palace.bot.core.cli.CommandSender;
 
 /**
  * 命令管理接口
@@ -19,7 +20,7 @@ public interface CommandManager {
      */
     boolean registerCommand(AbstractCommand command);
 
-    void executeCommand(AbstractCommand command, MessageChain arguments);
+    void executeCommand(CommandSender commandSender, AbstractCommand command, MessageChain chain);
 
     /**
      * 匹配命令
