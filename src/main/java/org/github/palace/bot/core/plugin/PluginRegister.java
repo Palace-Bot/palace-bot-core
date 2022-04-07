@@ -26,6 +26,11 @@ public class PluginRegister {
     public static final String PLUGIN_RESOURCE_LOCATION = "plugin";
 
     /**
+     * 插件lib加载器, 作为parent。
+     */
+    private final PluginLibClassLoader pluginLibClassLoader = new PluginLibClassLoader();
+
+    /**
      * key: classloader, value: plugin
      */
     @Getter
@@ -63,7 +68,9 @@ public class PluginRegister {
             for (File item : files) {
                 if (item.getName().endsWith(".jar")) {
                     try {
-                        pluginLoaderList.add(new PluginClassLoader(item));
+                        long time = System.currentTimeMillis();
+                        pluginLoaderList.add(new PluginClassLoader(item, pluginLibClassLoader));
+                        LOGGER.info("load plugin: {} cost {}ms", item.getName(), System.currentTimeMillis() - time);
                     } catch (Exception e) {
                         throw new PluginException("plugin load error: " + item.getName(), e);
                     }

@@ -1,12 +1,12 @@
 package org.github.palace.bot.core.plugin;
 
 import lombok.EqualsAndHashCode;
+import org.github.palace.bot.utils.ZipUtil;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.jar.Attributes;
@@ -30,14 +30,6 @@ public final class PluginClassLoader implements PluginLoader {
     private String mainClass;
     private final URLClassLoader classLoader;
 
-    public PluginClassLoader(String path) {
-        this(new File(path), null);
-    }
-
-    public PluginClassLoader(File path) {
-        this(path, null);
-    }
-
     public PluginClassLoader(File path, @Nullable ClassLoader parent) {
         this.classLoader = createClassLoader(path, parent);
     }
@@ -58,7 +50,7 @@ public final class PluginClassLoader implements PluginLoader {
      */
     private URLClassLoader createClassLoader(final File file, @Nullable ClassLoader parent) {
         if (parent == null) {
-            parent = Thread.currentThread().getContextClassLoader();
+            parent = ClassLoader.getSystemClassLoader();
         }
         return replaceClassLoader(URLClassLoader.newInstance(new URL[0], parent), file);
     }
@@ -72,19 +64,29 @@ public final class PluginClassLoader implements PluginLoader {
      */
     private URLClassLoader replaceClassLoader(final URLClassLoader oldLoader, final File file) {
         if (file != null && file.canRead() && file.isFile()) {
-            URL[] elements = new URL[1];
 
+            URL[] ordUrls = oldLoader.getURLs();
+
+            URL[] elements = new URL[ordUrls.length + 1];
             try (JarFile jarFile = new JarFile(file)) {
                 Manifest manifest = jarFile.getManifest();
                 Attributes attributes = manifest.getMainAttributes();
                 mainClass = attributes.getValue("Main-Class");
 
-                URL element = file.toURI().normalize().toURL();
-                elements[0] = element;
+                // 解压jar包
+                String fileName = "plugin/" + file.getName().replace(".jar", "");
+                ZipUtil.unzip(file.getAbsolutePath(), fileName);
+                // 设置插件类加载器目录
+                elements[0] = new File(fileName).toURI().normalize().toURL();
+                // 将旧的类加载器添加到新的类加载器中
+                for (int i = 0; i < oldLoader.getURLs().length; i++) {
+                    elements[i + 1] = oldLoader.getURLs()[i];
+                }
 
                 ClassLoader oldParent = oldLoader.getParent();
                 return URLClassLoader.newInstance(elements, oldParent);
-            } catch (IOException ignored) {
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
@@ -101,7 +103,7 @@ public final class PluginClassLoader implements PluginLoader {
                 return (Plugin) obj;
             }
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error(e.getMessage(), e);
         }
         return null;
     }

@@ -20,8 +20,7 @@ public class EventExceptionHandler extends AbstractCoroutineContextElement imple
 
     @Override
     public void handleException(@NotNull CoroutineContext coroutineContext, @NotNull Throwable throwable) {
-        throwable.printStackTrace();
-        logger.error(throwable.getMessage());
+        logger.error(throwable.getMessage(), throwable);
     }
 
 }

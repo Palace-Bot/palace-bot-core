@@ -11,8 +11,14 @@ import org.github.palace.bot.core.cli.support.CommandSessionHelper;
 import org.github.palace.bot.core.cli.support.CommandManager;
 import org.github.palace.bot.core.cli.support.DefaultCommandManager;
 import org.github.palace.bot.core.utils.MiraiCodeUtil;
+import org.github.palace.bot.data.message.entity.MessageDO;
+import org.github.palace.bot.data.message.service.MessageService;
+import org.github.palace.bot.data.message.service.impl.MessageServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Date;
+import java.util.stream.Collectors;
 
 /**
  * @author JHY
@@ -55,7 +61,7 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
                 } else {
                     // TODO 异常发送给某人, 还没想好怎么做
                     commandSessionHelper.crash(commandSession);
-                    LOGGER.error(exception.getMessage());
+                    LOGGER.error(exception.getMessage(), exception);
                 }
             }
             return;
@@ -67,6 +73,14 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
             commandSessionHelper.sendDetermine(subject, messageSource, chain.get(1));
             commandSessionHelper.finish(commandSession);
         }
+
+        // data
+        MessageService messageService = new MessageServiceImpl();
+        // 保存聊天记录
+        messageService.save(subject.getId(), MessageDO.builder()
+                .memberId(messageSource.getFromId())
+                .message(chain.stream().map(SingleMessage::contentToString).collect(Collectors.joining()))
+                .createAt(new Date()).build());
     }
 
     @Override
