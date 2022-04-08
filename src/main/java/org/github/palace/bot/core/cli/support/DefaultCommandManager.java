@@ -57,7 +57,7 @@ public class DefaultCommandManager implements CommandManager {
 
     @Override
     public void executeCommand(CommandSender commandSender, AbstractCommand command, MessageChain chain) {
-        Object[] args = new Object[ParameterMapping.CLASS_TABLE.size()];
+        Object[] args = new Object[5 + chain.size()];
 
         args[0] = commandSender;
         args[1] = commandSender.getBot();
