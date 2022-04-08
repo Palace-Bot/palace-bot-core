@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 
 /**
  * @author JHY
@@ -43,6 +44,11 @@ public class EventDispatcher {
                     .subscribeAlways(handler.getHandlerEvent(), handler::onEvent);
             listeners.add(eventListener);
         }
+    }
 
+    public void stop() {
+        for (Listener<?> listener : listeners) {
+            listener.cancel(new CancellationException());
+        }
     }
 }

@@ -2,8 +2,11 @@ package org.github.palace.bot.core.plugin;
 
 import lombok.Getter;
 import org.github.palace.bot.core.cli.AbstractCommand;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * 插件主类
@@ -14,7 +17,10 @@ import java.util.List;
 public abstract class Plugin implements PluginLoaderLifeCycle {
 
     @Getter
-    public final List<AbstractCommand> commands = new ArrayList<>();
+    protected final List<AbstractCommand> commands = new ArrayList<>();
+
+    @Getter
+    private ScheduledExecutorService pusherExecutorService = Executors.newSingleThreadScheduledExecutor();
 
     @Getter
     private final String version;
@@ -47,6 +53,7 @@ public abstract class Plugin implements PluginLoaderLifeCycle {
      * 注册命令
      */
     protected Plugin register(AbstractCommand command) {
+        command.parse();
         commands.add(command);
         return this;
     }

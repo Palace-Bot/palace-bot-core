@@ -20,7 +20,24 @@ public interface CommandManager {
      */
     boolean registerCommand(AbstractCommand command);
 
+    /**
+     * 执行具体命令
+     *
+     * @param commandSender 命令发送者
+     * @param command       命令
+     * @param chain         消息链
+     */
     void executeCommand(CommandSender commandSender, AbstractCommand command, MessageChain chain);
+
+    /**
+     * 启动主动推送
+     */
+    void startCommandPush();
+
+    /**
+     * 停止主动推送
+     */
+    void stopCommandPush();
 
     /**
      * 匹配命令

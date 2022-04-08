@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author JHY
@@ -46,7 +47,7 @@ public class ParameterMapping {
 
     @Nullable
     public static InvocableMethod mapping(AbstractCommand command, Object[] args) {
-        Method[] methods = command.getClass().getDeclaredMethods();
+        Set<Method> methods = command.getCommandHandlerMethodMap().keySet();
         for (Method method : methods) {
             Class<?>[] parameterTypes = method.getParameterTypes();
             Object[] params = new Object[parameterTypes.length];

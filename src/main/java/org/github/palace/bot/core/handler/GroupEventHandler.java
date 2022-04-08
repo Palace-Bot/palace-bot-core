@@ -7,9 +7,9 @@ import net.mamoe.mirai.message.data.*;
 import org.github.palace.bot.core.cli.AbstractCommand;
 import org.github.palace.bot.core.cli.CommandSender;
 import org.github.palace.bot.core.cli.CommandSession;
+import org.github.palace.bot.core.cli.support.CommandManagerFactory;
 import org.github.palace.bot.core.cli.support.CommandSessionHelper;
 import org.github.palace.bot.core.cli.support.CommandManager;
-import org.github.palace.bot.core.cli.support.DefaultCommandManager;
 import org.github.palace.bot.core.utils.MiraiCodeUtil;
 import org.github.palace.bot.data.message.entity.MessageDO;
 import org.github.palace.bot.data.message.service.MessageService;
@@ -28,7 +28,7 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupEventHandler.class);
 
     private final CommandSessionHelper commandSessionHelper = new CommandSessionHelper();
-    private final CommandManager commandManager = new DefaultCommandManager("/");
+    private final CommandManager commandManager = CommandManagerFactory.instance();
 
     @Override
     public void onEvent(GroupMessageEvent event) {
