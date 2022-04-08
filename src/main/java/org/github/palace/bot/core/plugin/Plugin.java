@@ -20,7 +20,7 @@ public abstract class Plugin implements PluginLoaderLifeCycle {
     protected final List<AbstractCommand> commands = new ArrayList<>();
 
     @Getter
-    private ScheduledExecutorService pusherExecutorService = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService pusherExecutorService = Executors.newSingleThreadScheduledExecutor();
 
     @Getter
     private final String version;

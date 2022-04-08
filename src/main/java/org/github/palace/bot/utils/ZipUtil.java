@@ -9,7 +9,11 @@ import java.util.zip.ZipInputStream;
  * @date 2022/4/6 15:21
  */
 
-public class ZipUtil {
+public final class ZipUtil {
+
+    private ZipUtil() {
+    }
+
     /**
      * 解压
      *

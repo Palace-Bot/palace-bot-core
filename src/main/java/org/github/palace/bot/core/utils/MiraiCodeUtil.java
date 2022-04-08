@@ -14,8 +14,4 @@ public final class MiraiCodeUtil {
         return mraiCode.contains("[" + AT_ME_MIRAI_CODE + botId + "]");
     }
 
-    public static boolean isCommandLine(String mraiCode) {
-        return true;
-    }
-
 }

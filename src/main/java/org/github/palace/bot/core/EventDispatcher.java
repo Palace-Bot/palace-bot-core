@@ -19,7 +19,7 @@ public class EventDispatcher {
     private static final Logger LOGGER = LoggerFactory.getLogger(EventDispatcher.class);
 
     private final List<Listener<?>> listeners = new ArrayList<>();
-    private List<EventHandler<Event>> handlers = new ArrayList<>();
+    private final List<EventHandler<Event>> handlers = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
     public EventDispatcher() {

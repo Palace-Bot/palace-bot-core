@@ -20,7 +20,7 @@ import java.util.Set;
 public class ParameterMapping {
 
     // TODO 可以优化，暂时先写死
-    public static final Map<Class<?>, Integer> CLASS_TABLE = new HashMap<>();
+    private static final Map<Class<?>, Integer> CLASS_TABLE = new HashMap<>();
 
     static {
         // 基本
@@ -43,6 +43,9 @@ public class ParameterMapping {
         CLASS_TABLE.put(Audio.class, 14);
         CLASS_TABLE.put(MarketFace.class, 15);
         CLASS_TABLE.put(MusicShare.class, 16);
+    }
+
+    private ParameterMapping() {
     }
 
     @Nullable
