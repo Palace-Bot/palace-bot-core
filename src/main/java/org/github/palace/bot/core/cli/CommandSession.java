@@ -2,6 +2,7 @@ package org.github.palace.bot.core.cli;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.mamoe.mirai.message.data.MessageChain;
 
 /**
  * 命令执行状态
@@ -9,14 +10,18 @@ import lombok.Setter;
  * @author JHY
  * @date 2022/3/25 7:31
  */
+
 public class CommandSession {
 
     @Getter
     @Setter
-    private Command command;
+    private AbstractCommand command;
 
     @Getter
     private State state;
+
+    @Getter
+    private final MessageChain chain;
 
     public enum State {
         RUNNABLE,
@@ -25,12 +30,14 @@ public class CommandSession {
         CRASH
     }
 
-    public CommandSession(Command command) {
+    public CommandSession(AbstractCommand command, MessageChain chain) {
         this.command = command;
+        this.chain = chain;
     }
 
-    public CommandSession(Command command, State state) {
+    public CommandSession(AbstractCommand command, MessageChain chain, State state) {
         this.command = command;
+        this.chain = chain;
         this.state = state;
     }
 

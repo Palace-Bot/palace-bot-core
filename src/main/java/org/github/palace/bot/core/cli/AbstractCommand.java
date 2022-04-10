@@ -5,7 +5,9 @@ import org.github.palace.bot.core.annotation.CommandHandler;
 import org.github.palace.bot.core.annotation.CommandPusher;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,7 +26,13 @@ public abstract class AbstractCommand extends Command {
      * 推送器
      */
     @Getter
-    private final Map<Method, CommandPusher> commandPushMethodMap = new HashMap<>(16);
+    private final Map<Method, CommandPusher> commandPusherMethodMap = new HashMap<>(16);
+
+    /**
+     * 子命令
+     */
+    @Getter
+    private final List<AbstractCommand> childrenCommand = new ArrayList<>();
 
     protected AbstractCommand(String primaryName, Void permission, boolean determine, String description) {
         super(primaryName, permission, determine, description);
@@ -40,10 +48,22 @@ public abstract class AbstractCommand extends Command {
                 if (method.isAnnotationPresent(CommandHandler.class)) {
                     commandHandlerMethodMap.put(method, method.getAnnotation(CommandHandler.class));
                 } else if (method.isAnnotationPresent(CommandPusher.class)) {
-                    commandPushMethodMap.put(method, method.getAnnotation(CommandPusher.class));
+                    commandPusherMethodMap.put(method, method.getAnnotation(CommandPusher.class));
                 }
             }
         }
+    }
+
+    /**
+     * 注册命令
+     */
+    public void register(AbstractCommand command) {
+        command.parse();
+        childrenCommand.add(command);
+    }
+
+    public boolean hasChildrenCommand() {
+        return !childrenCommand.isEmpty();
     }
 
 }

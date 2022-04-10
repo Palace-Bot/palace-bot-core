@@ -4,7 +4,7 @@ package org.github.palace.bot.core.cli.support;
  * @author jihongyuan
  * @date 2022/4/8 9:38
  */
-public class CommandManagerFactory {
+public final class CommandManagerFactory {
 
     private static CommandManager commandManager;
 

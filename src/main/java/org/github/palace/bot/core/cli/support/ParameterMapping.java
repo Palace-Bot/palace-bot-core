@@ -57,7 +57,7 @@ public class ParameterMapping {
             int current = 0;
             for (Class<?> parameterType : parameterTypes) {
                 for (Object arg : args) {
-                    if (parameterType.isAssignableFrom(arg.getClass())) {
+                    if (arg != null && parameterType.isAssignableFrom(arg.getClass())) {
                         params[current++] = arg;
                     }
                 }

@@ -6,6 +6,7 @@ import net.mamoe.mirai.message.data.SingleMessage;
 import org.github.palace.bot.core.annotation.CommandPusher;
 import org.github.palace.bot.core.cli.AbstractCommand;
 import org.github.palace.bot.core.cli.CommandSender;
+import org.github.palace.bot.core.cli.CommandSession;
 import org.github.palace.bot.core.plugin.Plugin;
 import org.github.palace.bot.core.plugin.PluginLoader;
 import org.github.palace.bot.core.plugin.PluginRegister;
@@ -14,8 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -57,15 +56,20 @@ public class DefaultCommandManager implements CommandManager {
 
     @Override
     public void executeCommand(CommandSender commandSender, AbstractCommand command, MessageChain chain) {
-        Object[] args = new Object[5 + chain.size()];
+        this.executeCommand(commandSender, command, null, chain);
+    }
+
+    @Override
+    public void executeCommand(CommandSender commandSender, AbstractCommand command, CommandSession session, MessageChain chain) {
+        Object[] args = new Object[6 + chain.size()];
 
         args[0] = commandSender;
         args[1] = commandSender.getBot();
         args[2] = commandSender.getSubject();
         args[3] = commandSender.getUser();
         args[4] = commandSender.getName();
-
-        int current = 5;
+        args[5] = session;
+        int current = 6;
         for (SingleMessage singleMessage : chain) {
             args[current++] = singleMessage;
         }
@@ -76,13 +80,21 @@ public class DefaultCommandManager implements CommandManager {
         }
     }
 
+    public void executeChildCommand(CommandSender commandSender, AbstractCommand command, CommandSession session, MessageChain chain) {
+        for (AbstractCommand abstractCommand : command.getChildrenCommand()) {
+            if (chain.get(1).contentToString().trim().equals(abstractCommand.getPrimaryName())) {
+                executeCommand(commandSender, abstractCommand, chain);
+            }
+        }
+    }
+
     @Override
     public void startCommandPush() {
         Map<PluginLoader, Plugin> pluginCache = pluginRegister.getPluginCache();
         for (Map.Entry<PluginLoader, Plugin> entry : pluginCache.entrySet()) {
             Plugin plugin = entry.getValue();
             for (AbstractCommand command : plugin.getCommands()) {
-                Map<Method, CommandPusher> commandPushMethodMap = command.getCommandPushMethodMap();
+                Map<Method, CommandPusher> commandPushMethodMap = command.getCommandPusherMethodMap();
                 commandPushMethodMap.forEach((method, commandPusher) -> plugin.getPusherExecutorService().scheduleAtFixedRate(() -> {
                     try {
                         method.invoke(command, bot.getGroups());
@@ -108,20 +120,24 @@ public class DefaultCommandManager implements CommandManager {
     @Override
     public AbstractCommand matchCommand(String commandName) {
         if (commandName.startsWith(commandPrefix) && commandName.length() > 1) {
-            List<AbstractCommand> matchList = new ArrayList<>();
-
             Map<PluginLoader, Plugin> pluginCache = pluginRegister.getPluginCache();
             for (Map.Entry<PluginLoader, Plugin> entry : pluginCache.entrySet()) {
                 Plugin plugin = entry.getValue();
                 for (AbstractCommand command : plugin.getCommands()) {
                     if (commandName.equals(commandPrefix + command.getPrimaryName())) {
-                        matchList.add(command);
+                        return command;
                     }
                 }
             }
+        }
+        return null;
+    }
 
-            if (!matchList.isEmpty()) {
-                return matchList.get(0);
+    @Override
+    public AbstractCommand matchCommand(String commandName, AbstractCommand command) {
+        for (AbstractCommand abstractCommand : command.getChildrenCommand()) {
+            if (commandName.equals(abstractCommand.getPrimaryName()) || "*".equals(abstractCommand.getPrimaryName())) {
+                return abstractCommand;
             }
         }
         return null;

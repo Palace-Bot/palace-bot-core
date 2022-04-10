@@ -33,45 +33,60 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
     @Override
     public void onEvent(GroupMessageEvent event) {
         Group subject = event.getSubject();
+
         MessageChain chain = event.getMessage();
-
         MessageSource messageSource = (MessageSource) chain.get(0);
-        String miraiCode = chain.serializeToMiraiCode();
 
-        // at机器人 默认 at后面就是命令
-        if (MiraiCodeUtil.isAtMe(miraiCode, subject.getBot().getId())) {
-            AbstractCommand command = commandManager.matchCommand(chain.get(2).contentToString().trim());
-            if (command != null) {
-                CommandSession commandSession = commandSessionHelper.put(messageSource, command);
-
-                Exception exception = null;
-                try {
-                    commandManager.executeCommand(CommandSender.toCommandSender(event), command, chain);
-                } catch (Exception e) {
-                    exception = e;
-                }
-
-                if (exception == null) {
-                    if (!command.isDetermine()) {
-                        commandSessionHelper.finish(commandSession);
-                    } else {  // 重复确定
-                        subject.sendMessage(new At(messageSource.getFromId()).plus(" Is this ok [Y/n]:"));
-                        commandSessionHelper.prepare(commandSession);
-                    }
-                } else {
-                    // TODO 异常发送给某人, 还没想好怎么做
-                    commandSessionHelper.crash(commandSession);
-                    LOGGER.error(exception.getMessage(), exception);
-                }
-            }
+        CommandSession prepareCommandSession = commandSessionHelper.get(messageSource, CommandSession.State.PREPARE);
+        // 尝试处理determine
+        if (prepareCommandSession != null && commandSessionHelper.trySendDetermine(subject, messageSource, chain.get(1))) {
+            commandSessionHelper.finish(prepareCommandSession);
             return;
         }
 
-        CommandSession commandSession = commandSessionHelper.get(messageSource, CommandSession.State.PREPARE);
-        // 存在待处理命令
-        if (commandSession != null) {
-            commandSessionHelper.sendDetermine(subject, messageSource, chain.get(1));
-            commandSessionHelper.finish(commandSession);
+        AbstractCommand command;
+        Exception exception = null;
+
+        // at机器人 默认 at后面就是命令
+        if (MiraiCodeUtil.isAtMe(chain.serializeToMiraiCode(), subject.getBot().getId())) {
+            command = commandManager.matchCommand(chain.get(2).contentToString().trim());
+        } else if (prepareCommandSession != null) {
+            command = commandManager.matchCommand(chain.get(1).contentToString().trim(), prepareCommandSession.getCommand());
+        } else {
+            command = commandManager.matchCommand(chain.get(1).contentToString().trim());
+        }
+
+        if (command != null) {
+            CommandSession commandSession = commandSessionHelper.put(messageSource, command, chain);
+            try {
+                // 处理子命令
+                if (prepareCommandSession != null) {
+                    commandManager.executeCommand(CommandSender.toCommandSender(event), commandSession.getCommand(), prepareCommandSession, chain);
+                } else {
+                    commandManager.executeCommand(CommandSender.toCommandSender(event), command, chain);
+                }
+            } catch (Exception e) {
+                exception = e;
+            }
+
+            if (exception == null) {
+                // 重复确定
+                if (command.isDetermine()) {
+                    subject.sendMessage(new At(messageSource.getFromId()).plus(" Is this ok [Y/n]:"));
+                    commandSessionHelper.prepare(commandSession);
+                }
+                // 存在命令
+                else if (command.hasChildrenCommand()) {
+                    commandSessionHelper.prepare(commandSession);
+                } else {
+                    commandSessionHelper.finish(commandSession);
+                }
+            } else {
+                // TODO 异常发送给某人, 还没想好怎么做
+                commandSessionHelper.crash(commandSession);
+                LOGGER.error(exception.getMessage(), exception);
+            }
+            return;
         }
 
         // data

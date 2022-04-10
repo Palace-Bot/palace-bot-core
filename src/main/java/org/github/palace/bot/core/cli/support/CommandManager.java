@@ -3,6 +3,7 @@ package org.github.palace.bot.core.cli.support;
 import net.mamoe.mirai.message.data.MessageChain;
 import org.github.palace.bot.core.cli.AbstractCommand;
 import org.github.palace.bot.core.cli.CommandSender;
+import org.github.palace.bot.core.cli.CommandSession;
 
 /**
  * 命令管理接口
@@ -30,6 +31,15 @@ public interface CommandManager {
     void executeCommand(CommandSender commandSender, AbstractCommand command, MessageChain chain);
 
     /**
+     * 执行具体命令
+     *
+     * @param commandSender 命令发送者
+     * @param command       命令
+     * @param chain         消息链
+     */
+    void executeCommand(CommandSender commandSender, AbstractCommand command, CommandSession session, MessageChain chain);
+
+    /**
      * 启动主动推送
      */
     void startCommandPush();
@@ -46,5 +56,14 @@ public interface CommandManager {
      * @return command
      */
     AbstractCommand matchCommand(String commandName);
+
+
+    /**
+     * 匹配子命令
+     *
+     * @param commandName 命令名称（不加前缀 如：/）
+     * @return command
+     */
+    AbstractCommand matchCommand(String commandName, AbstractCommand command);
 
 }
