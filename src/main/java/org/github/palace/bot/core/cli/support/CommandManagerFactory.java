@@ -8,6 +8,9 @@ public final class CommandManagerFactory {
 
     private static CommandManager commandManager;
 
+    private CommandManagerFactory() {
+    }
+
     public static void setCommandManager(CommandManager commandManager) {
         CommandManagerFactory.commandManager = commandManager;
     }
