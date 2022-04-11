@@ -1,5 +1,7 @@
 package org.github.palace.bot.core.handler;
 
+import net.mamoe.mirai.Bot;
+import net.mamoe.mirai.contact.Friend;
 import org.github.palace.bot.core.EventHandler;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
@@ -10,6 +12,7 @@ import org.github.palace.bot.core.cli.CommandSession;
 import org.github.palace.bot.core.cli.support.CommandManagerFactory;
 import org.github.palace.bot.core.cli.support.CommandSessionHelper;
 import org.github.palace.bot.core.cli.support.CommandManager;
+import org.github.palace.bot.core.constant.BaseConstant;
 import org.github.palace.bot.core.utils.MiraiCodeUtil;
 import org.github.palace.bot.data.message.entity.MessageDO;
 import org.github.palace.bot.data.message.service.MessageService;
@@ -17,6 +20,7 @@ import org.github.palace.bot.data.message.service.impl.MessageServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -82,7 +86,13 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
                     commandSessionHelper.finish(commandSession);
                 }
             } else {
-                // TODO 异常发送给某人, 还没想好怎么做
+                // 异常发送给使用者
+                Bot bot = event.getBot();
+                Friend friend = bot.getFriend(BaseConstant.USER);
+                if (friend != null) {
+                    String stackTrace = Arrays.stream(exception.getStackTrace()).map(StackTraceElement::toString).collect(Collectors.joining("\r\n"));
+                    friend.sendMessage(exception.getMessage() + "\r\n" + stackTrace);
+                }
                 commandSessionHelper.crash(commandSession);
                 LOGGER.error(exception.getMessage(), exception);
             }
