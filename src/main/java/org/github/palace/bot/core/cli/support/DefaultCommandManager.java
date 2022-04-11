@@ -10,6 +10,7 @@ import org.github.palace.bot.core.cli.CommandSession;
 import org.github.palace.bot.core.plugin.Plugin;
 import org.github.palace.bot.core.plugin.PluginLoader;
 import org.github.palace.bot.core.plugin.PluginRegister;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +62,7 @@ public class DefaultCommandManager implements CommandManager {
 
     @Override
     public void executeCommand(CommandSender commandSender, AbstractCommand command, CommandSession session, MessageChain chain) {
+        // TODO 待优化
         Object[] args = new Object[6 + chain.size()];
 
         args[0] = commandSender;
@@ -77,14 +79,6 @@ public class DefaultCommandManager implements CommandManager {
         InvocableMethod invocableMethod = ParameterMapping.mapping(command, args);
         if (invocableMethod != null) {
             invocableMethod.doInvoke();
-        }
-    }
-
-    public void executeChildCommand(CommandSender commandSender, AbstractCommand command, CommandSession session, MessageChain chain) {
-        for (AbstractCommand abstractCommand : command.getChildrenCommand()) {
-            if (chain.get(1).contentToString().trim().equals(abstractCommand.getPrimaryName())) {
-                executeCommand(commandSender, abstractCommand, chain);
-            }
         }
     }
 
@@ -116,7 +110,7 @@ public class DefaultCommandManager implements CommandManager {
         }
     }
 
-
+    @Nullable
     @Override
     public AbstractCommand matchCommand(String commandName) {
         if (commandName.startsWith(commandPrefix) && commandName.length() > 1) {
@@ -133,6 +127,7 @@ public class DefaultCommandManager implements CommandManager {
         return null;
     }
 
+    @Nullable
     @Override
     public AbstractCommand matchCommand(String commandName, AbstractCommand command) {
         for (AbstractCommand abstractCommand : command.getChildrenCommand()) {

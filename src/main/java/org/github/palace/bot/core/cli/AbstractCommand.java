@@ -1,9 +1,11 @@
 package org.github.palace.bot.core.cli;
 
 import lombok.Getter;
+import org.github.palace.bot.core.annotation.ChildCommandHandler;
 import org.github.palace.bot.core.annotation.CommandHandler;
 import org.github.palace.bot.core.annotation.CommandPusher;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,12 +49,32 @@ public abstract class AbstractCommand extends Command {
             for (Method method : methods) {
                 if (method.isAnnotationPresent(CommandHandler.class)) {
                     commandHandlerMethodMap.put(method, method.getAnnotation(CommandHandler.class));
+                } else if (method.isAnnotationPresent(ChildCommandHandler.class)) {
+                    ChildCommandHandler childCommandHandler = method.getAnnotation(ChildCommandHandler.class);
+                    try {
+                        // TODO 待优化
+                        Constructor<? extends AbstractCommand> constructor = this.getClass().getDeclaredConstructor();
+                        AbstractCommand command = constructor.newInstance();
+                        command.setPrimaryName(childCommandHandler.primaryName());
+                        command.setPermission(null);
+                        command.setDetermine(false);
+                        command.setDescription(null);
+
+                        command.putCommandHandler(method, null);
+                        childrenCommand.add(command);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+
                 } else if (method.isAnnotationPresent(CommandPusher.class)) {
                     commandPusherMethodMap.put(method, method.getAnnotation(CommandPusher.class));
                 }
+
             }
         }
     }
+
 
     /**
      * 注册命令
@@ -64,6 +86,10 @@ public abstract class AbstractCommand extends Command {
 
     public boolean hasChildrenCommand() {
         return !childrenCommand.isEmpty();
+    }
+
+    public void putCommandHandler(Method method, CommandHandler commandHandler) {
+        this.commandHandlerMethodMap.put(method, commandHandler);
     }
 
 }
