@@ -13,7 +13,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.version>1.5.10</kotlin.version>
-        <mamoe.version>2.9.1</mamoe.version>
+        <mamoe.version>2.10.1</mamoe.version>
     </properties>
 
     <dependencies>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>21.0</version>
+            <version>31.1-jre</version>
         </dependency>
 
         <dependency>
