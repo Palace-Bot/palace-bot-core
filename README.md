@@ -1,1 +1,1 @@
-# Palace-Bot
+# Palace Bot Core
