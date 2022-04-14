@@ -1,6 +1,7 @@
 package org.github.palace.bot.core.cli;
 
 import lombok.Getter;
+import net.mamoe.mirai.contact.MemberPermission;
 import org.github.palace.bot.core.annotation.ChildCommandHandler;
 import org.github.palace.bot.core.annotation.CommandHandler;
 import org.github.palace.bot.core.annotation.CommandPusher;
@@ -36,7 +37,7 @@ public abstract class AbstractCommand extends Command {
     @Getter
     private final List<AbstractCommand> childrenCommand = new ArrayList<>();
 
-    protected AbstractCommand(String primaryName, Void permission, boolean determine, String description) {
+    protected AbstractCommand(String primaryName, MemberPermission permission, boolean determine, String description) {
         super(primaryName, permission, determine, description);
     }
 

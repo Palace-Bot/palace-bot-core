@@ -1,5 +1,6 @@
 package org.github.palace.bot.core.cli.support;
 
+import net.mamoe.mirai.contact.MemberPermission;
 import net.mamoe.mirai.message.data.MessageChain;
 import org.github.palace.bot.core.cli.AbstractCommand;
 import org.github.palace.bot.core.cli.CommandSender;
@@ -26,18 +27,21 @@ public interface CommandManager {
      *
      * @param commandSender 命令发送者
      * @param command       命令
+     * @param permission    用户权限
      * @param chain         消息链
      */
-    void executeCommand(CommandSender commandSender, AbstractCommand command, MessageChain chain);
+    void executeCommand(CommandSender commandSender, AbstractCommand command, MemberPermission permission, MessageChain chain);
 
     /**
      * 执行具体命令
      *
      * @param commandSender 命令发送者
      * @param command       命令
+     * @param permission    用户权限
+     * @param session       上次未处理命令会话
      * @param chain         消息链
      */
-    void executeCommand(CommandSender commandSender, AbstractCommand command, CommandSession session, MessageChain chain);
+    void executeCommand(CommandSender commandSender, AbstractCommand command, MemberPermission permission, CommandSession session, MessageChain chain);
 
     /**
      * 启动主动推送

@@ -2,6 +2,7 @@ package org.github.palace.bot.core.cli.support;
 
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.Contact;
+import net.mamoe.mirai.contact.MemberPermission;
 import net.mamoe.mirai.contact.User;
 import net.mamoe.mirai.message.data.*;
 import org.github.palace.bot.core.cli.AbstractCommand;
@@ -49,7 +50,7 @@ public class ParameterMapping {
     }
 
     @Nullable
-    public static InvocableMethod mapping(AbstractCommand command, Object[] args) {
+    public static InvocableMethod mapping(MemberPermission permission, AbstractCommand command, Object[] args) {
         Set<Method> methods = command.getCommandHandlerMethodMap().keySet();
         for (Method method : methods) {
             Class<?>[] parameterTypes = method.getParameterTypes();
@@ -57,7 +58,7 @@ public class ParameterMapping {
             int current = 0;
             for (Class<?> parameterType : parameterTypes) {
                 for (Object arg : args) {
-                    if (arg != null && parameterType.isAssignableFrom(arg.getClass())) {
+                    if (arg != null && parameterType.isAssignableFrom(arg.getClass()) && permission.getLevel() >= command.getPermission().getLevel()) {
                         params[current++] = arg;
                     }
                 }

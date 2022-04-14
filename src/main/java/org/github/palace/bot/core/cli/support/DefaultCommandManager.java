@@ -1,6 +1,7 @@
 package org.github.palace.bot.core.cli.support;
 
 import net.mamoe.mirai.Bot;
+import net.mamoe.mirai.contact.MemberPermission;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.SingleMessage;
 import org.github.palace.bot.core.annotation.CommandPusher;
@@ -56,12 +57,12 @@ public class DefaultCommandManager implements CommandManager {
     }
 
     @Override
-    public void executeCommand(CommandSender commandSender, AbstractCommand command, MessageChain chain) {
-        this.executeCommand(commandSender, command, null, chain);
+    public void executeCommand(CommandSender commandSender, AbstractCommand command, MemberPermission permission, MessageChain chain) {
+        this.executeCommand(commandSender, command, permission, null, chain);
     }
 
     @Override
-    public void executeCommand(CommandSender commandSender, AbstractCommand command, CommandSession session, MessageChain chain) {
+    public void executeCommand(CommandSender commandSender, AbstractCommand command, MemberPermission permission, CommandSession session, MessageChain chain) {
         // TODO 待优化
         Object[] args = new Object[6 + chain.size()];
 
@@ -76,7 +77,7 @@ public class DefaultCommandManager implements CommandManager {
             args[current++] = singleMessage;
         }
 
-        InvocableMethod invocableMethod = ParameterMapping.mapping(command, args);
+        InvocableMethod invocableMethod = ParameterMapping.mapping(permission, command, args);
         if (invocableMethod != null) {
             invocableMethod.doInvoke();
         }

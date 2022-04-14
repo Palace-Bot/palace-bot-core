@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.mamoe.mirai.contact.MemberPermission;
 
 /**
  * 命令基本信息
@@ -24,11 +25,10 @@ public class Command {
      */
     private String primaryName;
 
-    // TODO 还没想好
     /**
      * 为此指令分配的权限.
      */
-    private Void permission;
+    private MemberPermission permission;
 
     /**
      * 为 true 时, 需要 Y/n 确定

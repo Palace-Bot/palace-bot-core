@@ -2,6 +2,7 @@ package org.github.palace.bot.core.handler;
 
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.Friend;
+import net.mamoe.mirai.contact.NormalMember;
 import org.github.palace.bot.core.EventHandler;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -41,6 +43,10 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
         MessageChain chain = event.getMessage();
         MessageSource messageSource = (MessageSource) chain.get(0);
 
+        NormalMember member = Optional
+                .ofNullable(subject.get(messageSource.getFromId()))
+                .orElseThrow(() -> new RuntimeException("[Group Message Event] member is null"));
+
         CommandSession prepareCommandSession = commandSessionHelper.get(messageSource, CommandSession.State.PREPARE);
         // 尝试处理determine
         if (prepareCommandSession != null && commandSessionHelper.trySendDetermine(subject, messageSource, chain.get(1))) {
@@ -54,9 +60,13 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
         // at机器人 默认 at后面就是命令
         if (MiraiCodeUtil.isAtMe(chain.serializeToMiraiCode(), subject.getBot().getId())) {
             command = commandManager.matchCommand(chain.get(2).contentToString().trim());
-        } else if (prepareCommandSession != null) {
+        }
+        // 上下文中存在未处理命令
+        else if (prepareCommandSession != null) {
             command = commandManager.matchCommand(chain.get(1).contentToString().trim(), prepareCommandSession.getCommand());
-        } else {
+        }
+        // 普通命令
+        else {
             command = commandManager.matchCommand(chain.get(1).contentToString().trim());
         }
 
@@ -65,9 +75,9 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
             try {
                 // 处理子命令
                 if (prepareCommandSession != null) {
-                    commandManager.executeCommand(CommandSender.toCommandSender(event), commandSession.getCommand(), prepareCommandSession, chain);
+                    commandManager.executeCommand(CommandSender.toCommandSender(event), commandSession.getCommand(), member.getPermission(), prepareCommandSession, chain);
                 } else {
-                    commandManager.executeCommand(CommandSender.toCommandSender(event), command, chain);
+                    commandManager.executeCommand(CommandSender.toCommandSender(event), command, member.getPermission(), chain);
                 }
             } catch (Exception e) {
                 exception = e;
@@ -76,7 +86,7 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
             if (exception == null) {
                 // 重复确定
                 if (command.isDetermine()) {
-                    subject.sendMessage(new At(messageSource.getFromId()).plus(" Is this ok [Y/n]:"));
+                    subject.sendMessage(new At(member.getId()).plus(" Is this ok [Y/n]:"));
                     commandSessionHelper.prepare(commandSession);
                 }
                 // 存在命令
@@ -103,7 +113,7 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
         MessageService messageService = new MessageServiceImpl();
         // 保存聊天记录
         messageService.save(subject.getId(), MessageDO.builder()
-                .memberId(messageSource.getFromId())
+                .memberId(member.getId())
                 .message(chain.stream().map(SingleMessage::contentToString).collect(Collectors.joining()))
                 .createAt(new Date()).build());
     }
