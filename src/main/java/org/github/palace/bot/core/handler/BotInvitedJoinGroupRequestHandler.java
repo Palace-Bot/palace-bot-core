@@ -20,7 +20,7 @@ public class BotInvitedJoinGroupRequestHandler implements EventHandler<BotInvite
     @Override
     public void onEvent(BotInvitedJoinGroupRequestEvent event) {
         event.accept();
-        // TODO 插入日志 LOGGER.info();
+        LOGGER.info("[Join Group Event] id: {} name: {}", event.getEventId(), event.getGroupName());
     }
 
     @Override
