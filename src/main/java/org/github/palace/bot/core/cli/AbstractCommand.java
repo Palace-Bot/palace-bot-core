@@ -57,7 +57,7 @@ public abstract class AbstractCommand extends Command {
                         Constructor<? extends AbstractCommand> constructor = this.getClass().getDeclaredConstructor();
                         AbstractCommand command = constructor.newInstance();
                         command.setPrimaryName(childCommandHandler.primaryName());
-                        command.setPermission(null);
+                        command.setPermission(this.getPermission());
                         command.setDetermine(false);
                         command.setDescription(null);
 
