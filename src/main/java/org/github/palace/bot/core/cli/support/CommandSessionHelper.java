@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public class CommandSessionHelper {
 
-    // 我也不懂是不是线程安全
     /**
      * 保留用户命令上下文
      * key: 群号, value: {key: qq, value: 最近聊天记录}

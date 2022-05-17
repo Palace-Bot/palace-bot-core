@@ -10,10 +10,10 @@ import net.mamoe.mirai.message.data.*;
 import org.github.palace.bot.core.cli.AbstractCommand;
 import org.github.palace.bot.core.cli.CommandSender;
 import org.github.palace.bot.core.cli.CommandSession;
-import org.github.palace.bot.core.cli.support.CommandManagerFactory;
 import org.github.palace.bot.core.cli.support.CommandSessionHelper;
-import org.github.palace.bot.core.cli.support.CommandManager;
 import org.github.palace.bot.core.constant.BaseConstant;
+import org.github.palace.bot.core.plugin.Loc;
+import org.github.palace.bot.core.plugin.PluginManager;
 import org.github.palace.bot.core.utils.MiraiCodeUtil;
 import org.github.palace.bot.data.message.entity.MessageDO;
 import org.github.palace.bot.data.message.service.MessageService;
@@ -34,7 +34,8 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupEventHandler.class);
 
     private final CommandSessionHelper commandSessionHelper = new CommandSessionHelper();
-    private final CommandManager commandManager = CommandManagerFactory.instance();
+
+    private final PluginManager pluginManager = Loc.get(PluginManager.class);
 
     @Override
     public void onEvent(GroupMessageEvent event) {
@@ -59,15 +60,15 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
 
         // at机器人 默认 at后面就是命令
         if (MiraiCodeUtil.isAtMe(chain.serializeToMiraiCode(), subject.getBot().getId())) {
-            command = commandManager.matchCommand(chain.get(2).contentToString().trim());
+            command = pluginManager.matchCommand(chain.get(2).contentToString().trim());
         }
         // 上下文中存在未处理命令
         else if (prepareCommandSession != null) {
-            command = commandManager.matchCommand(chain.get(1).contentToString().trim(), prepareCommandSession.getCommand());
+            command = pluginManager.matchCommand(chain.get(1).contentToString().trim(), prepareCommandSession.getCommand());
         }
         // 普通命令
         else {
-            command = commandManager.matchCommand(chain.get(1).contentToString().trim());
+            command = pluginManager.matchCommand(chain.get(1).contentToString().trim());
         }
 
         if (command != null) {
@@ -75,9 +76,9 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
             try {
                 // 处理子命令
                 if (prepareCommandSession != null) {
-                    commandManager.executeCommand(CommandSender.toCommandSender(event), commandSession.getCommand(), member.getPermission(), prepareCommandSession, chain);
+                    pluginManager.executeCommand(CommandSender.toCommandSender(event), commandSession.getCommand(), member.getPermission(), prepareCommandSession);
                 } else {
-                    commandManager.executeCommand(CommandSender.toCommandSender(event), command, member.getPermission(), chain);
+                    pluginManager.executeCommand(CommandSender.toCommandSender(event), command, member.getPermission());
                 }
             } catch (Exception e) {
                 exception = e;

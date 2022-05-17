@@ -8,10 +8,7 @@ import org.github.palace.bot.core.annotation.CommandPusher;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author JHY3
@@ -23,7 +20,7 @@ public abstract class AbstractCommand extends Command {
      * 命令处理器
      */
     @Getter
-    private final Map<Method, CommandHandler> commandHandlerMethodMap = new HashMap<>(16);
+    private final Map<Method, CommandHandler> commandHandlerMethodMap = new LinkedHashMap<>(16);
 
     /**
      * 推送器
@@ -91,6 +88,16 @@ public abstract class AbstractCommand extends Command {
 
     public void putCommandHandler(Method method, CommandHandler commandHandler) {
         this.commandHandlerMethodMap.put(method, commandHandler);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
 }

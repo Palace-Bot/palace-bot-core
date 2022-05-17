@@ -1,26 +1,30 @@
-package org.github.palace.bot.core.cli.support;
+package org.github.palace.bot.core.plugin;
 
 import net.mamoe.mirai.contact.MemberPermission;
-import net.mamoe.mirai.message.data.MessageChain;
 import org.github.palace.bot.core.cli.AbstractCommand;
 import org.github.palace.bot.core.cli.CommandSender;
 import org.github.palace.bot.core.cli.CommandSession;
 
 /**
- * 命令管理接口
- *
- * @author JHY
- * @date 2022/3/27 9:43
+ * @author jihongyuan
+ * @date 2022/5/12 15:42
  */
-public interface CommandManager {
+public interface PluginManager {
 
     /**
-     * TODO 目前不支持手动注册命令, 必须已经插件模式注册
-     *
-     * @param command command
-     * @return register status
+     * Loader plugins
      */
-    boolean registerCommand(AbstractCommand command);
+    void load();
+
+    /**
+     * Start plugin and command
+     */
+    void start();
+
+    /**
+     * Stop plugin and command
+     */
+    void stop();
 
     /**
      * 执行具体命令
@@ -28,9 +32,8 @@ public interface CommandManager {
      * @param commandSender 命令发送者
      * @param command       命令
      * @param permission    用户权限
-     * @param chain         消息链
      */
-    void executeCommand(CommandSender commandSender, AbstractCommand command, MemberPermission permission, MessageChain chain);
+    void executeCommand(CommandSender commandSender, AbstractCommand command, MemberPermission permission);
 
     /**
      * 执行具体命令
@@ -39,19 +42,8 @@ public interface CommandManager {
      * @param command       命令
      * @param permission    用户权限
      * @param session       上次未处理命令会话
-     * @param chain         消息链
      */
-    void executeCommand(CommandSender commandSender, AbstractCommand command, MemberPermission permission, CommandSession session, MessageChain chain);
-
-    /**
-     * 启动主动推送
-     */
-    void startCommandPush();
-
-    /**
-     * 停止主动推送
-     */
-    void stopCommandPush();
+    void executeCommand(CommandSender commandSender, AbstractCommand command, MemberPermission permission, CommandSession session);
 
     /**
      * 匹配命令

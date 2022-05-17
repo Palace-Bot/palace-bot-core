@@ -14,7 +14,7 @@ import org.github.palace.bot.core.cli.CommandSender;
 public class MemberCommandSender extends CommandSender {
 
     private MemberCommandSender(GroupMessageEvent event) {
-        super(event.getBot(), event.getSubject(), event.getSender(), event.getSenderName());
+        super(event.getBot(), event.getSubject(), event.getSender(), event.getSenderName(), event.getMessage());
     }
 
     @Override

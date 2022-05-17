@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.mamoe.mirai.contact.MemberPermission;
 
+import java.util.Objects;
+
 /**
  * 命令基本信息
  *
@@ -39,5 +41,18 @@ public class Command {
      * 描述, 用于显示在 [BuiltInCommands.HelpCommand]
      */
     private String description;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Command command = (Command) o;
+        return determine == command.determine && Objects.equals(primaryName, command.primaryName) && permission == command.permission && Objects.equals(description, command.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(primaryName, permission, determine, description);
+    }
 
 }

@@ -3,8 +3,8 @@ package org.github.palace.bot.core.plugin;
 import lombok.Getter;
 import org.github.palace.bot.core.cli.AbstractCommand;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -14,22 +14,25 @@ import java.util.concurrent.ScheduledExecutorService;
  * @author JHY
  * @date 2022/3/30 15:47
  */
-public abstract class Plugin implements PluginLoaderLifeCycle {
+public class Plugin {
 
     @Getter
-    protected final List<AbstractCommand> commands = new ArrayList<>();
+    protected Set<AbstractCommand> commands = new HashSet<>();
 
     @Getter
-    private final ScheduledExecutorService pusherExecutorService = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledExecutorService pusherExecutorService = Executors.newSingleThreadScheduledExecutor();
 
     @Getter
-    private final String version;
+    private String version;
 
     @Getter
-    private final String name;
+    private String name;
 
     @Getter
-    private final String description;
+    private String description;
+
+    protected Plugin() {
+    }
 
     protected Plugin(String version, String name, String description) {
         this.version = version;
@@ -37,15 +40,12 @@ public abstract class Plugin implements PluginLoaderLifeCycle {
         this.description = description;
     }
 
-    @Override
     public void onLoad() {
     }
 
-    @Override
     public void onEnable() {
     }
 
-    @Override
     public void onDisable() {
     }
 

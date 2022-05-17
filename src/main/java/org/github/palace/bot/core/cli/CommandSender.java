@@ -8,6 +8,7 @@ import net.mamoe.mirai.contact.User;
 import net.mamoe.mirai.event.Event;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.message.data.Message;
+import net.mamoe.mirai.message.data.MessageChain;
 import org.github.palace.bot.core.cli.support.MemberCommandSender;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +26,12 @@ public abstract class CommandSender {
 
     private User user;
 
+    /**
+     * 发送者名称
+     */
     private String name;
+
+    private MessageChain messageChain;
 
     /**
      * 立刻发送一条消息.

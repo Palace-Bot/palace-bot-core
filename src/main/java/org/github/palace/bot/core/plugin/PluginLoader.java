@@ -8,6 +8,9 @@ package org.github.palace.bot.core.plugin;
  */
 public interface PluginLoader {
 
-    Plugin load();
+    void init();
+
+    void stop();
+
 
 }
