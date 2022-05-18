@@ -58,6 +58,8 @@ public abstract class AbstractPluginManager implements PluginManager {
                     ZipUtil.unzip(file, path);
                 }
 
+                long start = System.currentTimeMillis();
+
                 // (2) 创建类加载器
                 PluginClassLoader pluginClassLoader = new PluginClassLoader(path);
 
@@ -67,6 +69,7 @@ public abstract class AbstractPluginManager implements PluginManager {
                 // (4) 创建插件包装器
                 PluginWrapper pluginWrapper = new PluginWrapper(pluginProperties, pluginClassLoader);
 
+                log.info("load plugin: {} time: {}ms", path, System.currentTimeMillis() - start);
                 plugins.add(pluginWrapper);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);

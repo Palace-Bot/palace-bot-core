@@ -19,7 +19,6 @@ public class DefaultPluginManager extends AbstractPluginManager {
     @Override
     public void start() {
         for (PluginWrapper pluginWrapper : plugins) {
-
             Plugin plugin = null;
             try {
                 pluginWrapper.createPlugin();
@@ -29,9 +28,11 @@ public class DefaultPluginManager extends AbstractPluginManager {
             }
 
             if (plugin != null) {
+                long start = System.currentTimeMillis();
                 try {
                     plugin.onLoad();
                     commandManager.start(pluginWrapper);
+                    log.info("start plugin: {}, time: {}ms", pluginWrapper.getPlugin().getName(), System.currentTimeMillis() - start);
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
                 }

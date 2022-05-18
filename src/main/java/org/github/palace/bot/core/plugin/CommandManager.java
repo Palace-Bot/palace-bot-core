@@ -71,6 +71,7 @@ public class CommandManager {
     public void start(PluginWrapper pluginWrapper) {
         Set<AbstractCommand> commands = pluginWrapper.getCommands();
         for (AbstractCommand command : commands) {
+            log.debug("start command: {}", command.getPrimaryName());
             Map<Method, CommandPusher> commandPushMethodMap = command.getCommandPusherMethodMap();
             commandPushMethodMap.forEach((method, commandPusher) -> pluginWrapper.getPlugin().getPusherExecutorService().scheduleAtFixedRate(() -> {
 
