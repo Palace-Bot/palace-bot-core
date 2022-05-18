@@ -34,7 +34,7 @@ public class PluginPropertiesTest {
         Assert.assertNotNull(pluginProperties.version);
 
         Assert.assertEquals(pluginProperties.id, "hello-world");
-        Assert.assertEquals(pluginProperties.mainClass, "org.github.word.cloud.App");
+        Assert.assertEquals(pluginProperties.mainClass, "org.test.App");
         Assert.assertEquals(pluginProperties.version, "1.0-SNAPSHOT");
     }
 }
