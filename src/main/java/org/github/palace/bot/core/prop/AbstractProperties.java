@@ -15,7 +15,7 @@ import java.util.Properties;
 public abstract class AbstractProperties {
 
     public AbstractProperties(String path) {
-        this(path, null);
+        this(path, Thread.currentThread().getContextClassLoader());
     }
 
     /**
