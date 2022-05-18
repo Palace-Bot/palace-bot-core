@@ -47,10 +47,12 @@ public abstract class AbstractCommand extends Command {
             for (Method method : methods) {
                 if (method.isAnnotationPresent(CommandHandler.class)) {
                     commandHandlerMethodMap.put(method, method.getAnnotation(CommandHandler.class));
-                } else if (method.isAnnotationPresent(ChildCommandHandler.class)) {
+                }
+                // 解析子命令
+                else if (method.isAnnotationPresent(ChildCommandHandler.class)) {
                     ChildCommandHandler childCommandHandler = method.getAnnotation(ChildCommandHandler.class);
                     try {
-                        // TODO 待优化
+                        // TODO 待优化, 可以考虑字节码代理
                         Constructor<? extends AbstractCommand> constructor = this.getClass().getDeclaredConstructor();
                         AbstractCommand command = constructor.newInstance();
                         command.setPrimaryName(childCommandHandler.primaryName());
@@ -64,8 +66,9 @@ public abstract class AbstractCommand extends Command {
                         e.printStackTrace();
                     }
 
-
-                } else if (method.isAnnotationPresent(CommandPusher.class)) {
+                }
+                // 推送器
+                else if (method.isAnnotationPresent(CommandPusher.class)) {
                     commandPusherMethodMap.put(method, method.getAnnotation(CommandPusher.class));
                 }
 
