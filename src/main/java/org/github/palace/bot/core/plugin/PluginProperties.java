@@ -23,15 +23,18 @@ public class PluginProperties extends AbstractProperties {
         super(DEFAULT_PROPERTIES_FILE_NAME);
     }
 
-    public PluginProperties(ClassLoader classLoader) {
-        super(DEFAULT_PROPERTIES_FILE_NAME, classLoader);
-    }
-
     /**
      * @param path plugin.properties file path
      */
     public PluginProperties(String path) {
         super(path);
+    }
+
+    /**
+     * @param classLoader use {@code classloader.getResourceAsStream()}
+     */
+    public PluginProperties(ClassLoader classLoader) {
+        super(DEFAULT_PROPERTIES_FILE_NAME, classLoader);
     }
 
     @Override
