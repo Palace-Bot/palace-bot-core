@@ -78,7 +78,7 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
                 if (prepareCommandSession != null) {
                     pluginManager.executeCommand(CommandSender.toCommandSender(event), commandSession.getCommand(), member.getPermission(), prepareCommandSession);
                 } else {
-                    pluginManager.executeCommand(CommandSender.toCommandSender(event), command, member.getPermission());
+                    pluginManager.executeCommand(CommandSender.toCommandSender(event), command, member.getPermission(), commandSession);
                 }
             } catch (Exception e) {
                 exception = e;

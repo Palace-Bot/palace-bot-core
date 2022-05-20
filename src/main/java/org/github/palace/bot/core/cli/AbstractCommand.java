@@ -34,6 +34,14 @@ public abstract class AbstractCommand extends Command {
     @Getter
     private final List<AbstractCommand> childrenCommand = new ArrayList<>();
 
+    protected AbstractCommand(String primaryName, String description) {
+        super(primaryName, MemberPermission.MEMBER, false, description);
+    }
+
+    protected AbstractCommand(String primaryName, MemberPermission permission, String description) {
+        super(primaryName, permission, false, description);
+    }
+
     protected AbstractCommand(String primaryName, MemberPermission permission, boolean determine, String description) {
         super(primaryName, permission, determine, description);
     }

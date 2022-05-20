@@ -18,13 +18,14 @@ public class BotResolver implements Resolver {
     }
 
     @Override
-    public Object resolveArgument(CommandSender commandSender) {
-        return commandSender.getBot();
+    public <T> Object resolveArgument(T obj) {
+        if (obj instanceof CommandSender) {
+            return ((CommandSender) obj).getBot();
+        } else if (obj instanceof Bot) {
+            return obj;
+        }
+        return null;
     }
 
-    @Override
-    public Bot resolveArgument(Bot bot) {
-        return bot;
-    }
 
 }

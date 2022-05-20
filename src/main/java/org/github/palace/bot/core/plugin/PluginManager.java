@@ -41,7 +41,7 @@ public interface PluginManager {
      * @param commandSender 命令发送者
      * @param command       命令
      * @param permission    用户权限
-     * @param session       上次未处理命令会话
+     * @param session       子命令，父命令session, 否则当前命令session
      */
     void executeCommand(CommandSender commandSender, AbstractCommand command, MemberPermission permission, CommandSession session);
 

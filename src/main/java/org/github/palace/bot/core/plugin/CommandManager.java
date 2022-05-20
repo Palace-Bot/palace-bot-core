@@ -51,7 +51,7 @@ public class CommandManager {
 
         InvocableMethod invocableMethod = null;
         // (2) Create ParameterResolver, loop resolver
-        ParameterResolver resolver = new ParameterResolver(commandSender);
+        ParameterResolver resolver = new ParameterResolver(commandSender, session);
         for (Map.Entry<Method, Class<?>[]> methodEntry : methodParameterTypeMap.entrySet()) {
             Class<?>[] parameters = methodEntry.getValue();
             Object[] args = resolver.resolver(parameters);

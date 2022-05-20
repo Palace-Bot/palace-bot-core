@@ -1,9 +1,5 @@
 package org.github.palace.bot.core.cli.resolver;
 
-import net.mamoe.mirai.Bot;
-import net.mamoe.mirai.message.data.MessageChain;
-import org.github.palace.bot.core.cli.CommandSender;
-import org.github.palace.bot.core.cli.support.ParameterResolver;
 
 /**
  * @author jihongyuan
@@ -21,7 +17,7 @@ public interface Resolver {
     /**
      * Resolver argument
      *
-     * @param obj obj
+     * @param objs objs
      * @return resolver after data
      */
     default Object resolveArgument(Object obj) {
@@ -33,36 +29,9 @@ public interface Resolver {
         } else if (ParameterResolver.ResolverType.COMMAND_PUSHER.getClazz().isAssignableFrom(clazz)) {
             return resolveArgument((Bot) obj);
         }
-        return null;
+        return result;
     }
 
-    /**
-     * Resolver argument
-     *
-     * @param commandSender 发送者信息
-     * @return resolver after data
-     */
-    default Object resolveArgument(CommandSender commandSender) {
-        return null;
-    }
+    <T> Object resolveArgument(T obj);
 
-    /**
-     * Resolver argument
-     *
-     * @param messageChain 消息链条
-     * @return resolver after data
-     */
-    default Object resolveArgument(MessageChain messageChain) {
-        return null;
-    }
-
-    /**
-     * Resolver argument
-     *
-     * @param bot 机器人信息
-     * @return resolver after data
-     */
-    default Object resolveArgument(Bot bot) {
-        return null;
-    }
 }

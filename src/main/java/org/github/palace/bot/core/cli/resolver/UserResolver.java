@@ -18,8 +18,8 @@ public class UserResolver implements Resolver {
     }
 
     @Override
-    public Object resolveArgument(CommandSender commandSender) {
-        return commandSender.getUser();
+    public <T> Object resolveArgument(T obj) {
+        return obj instanceof CommandSender ? ((CommandSender) obj).getUser() : null;
     }
 
 }

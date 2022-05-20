@@ -18,8 +18,8 @@ public class ContactResolver implements Resolver{
     }
 
     @Override
-    public Object resolveArgument(CommandSender commandSender) {
-        return commandSender.getSubject();
+    public <T> Object resolveArgument(T obj) {
+        return obj instanceof CommandSender ? ((CommandSender) obj).getSubject() : null;
     }
 
 }

@@ -10,14 +10,15 @@ import org.github.palace.bot.core.cli.CommandSender;
 
 @EqualsAndHashCode
 public class StringResolver implements Resolver{
+
     @Override
     public boolean supportParameter(Class<?> parameter) {
         return String.class == parameter;
     }
 
     @Override
-    public Object resolveArgument(CommandSender commandSender) {
-        return commandSender.getName();
+    public <T> Object resolveArgument(T obj) {
+       return obj instanceof CommandSender ? ((CommandSender) obj).getName() : null;
     }
 
 }
