@@ -1,10 +1,5 @@
 package org.github.palace.bot.core.cli.support;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import net.mamoe.mirai.Bot;
-import net.mamoe.mirai.message.data.MessageSource;
-import org.github.palace.bot.core.cli.CommandSender;
 import org.github.palace.bot.core.cli.resolver.*;
 import org.github.palace.bot.core.exception.ParameterResolverException;
 
