@@ -79,7 +79,6 @@ public class PluginClassLoader extends URLClassLoader implements PluginLoader {
         try {
             clazz = findClass(className);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         }
         if (clazz != null) {
             return clazz;
