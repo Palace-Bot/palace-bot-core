@@ -20,14 +20,13 @@ public interface Resolver {
      * @param objs objs
      * @return resolver after data
      */
-    default Object resolveArgument(Object obj) {
-        Class<?> clazz = obj.getClass();
-        if (ParameterResolver.ResolverType.COMMAND_SENDER.getClazz().isAssignableFrom(clazz)) {
-            return resolveArgument((CommandSender) obj);
-        } else if (ParameterResolver.ResolverType.MESSAGE_CHINA.getClazz().isAssignableFrom(clazz)) {
-            return resolveArgument((MessageChain) obj);
-        } else if (ParameterResolver.ResolverType.COMMAND_PUSHER.getClazz().isAssignableFrom(clazz)) {
-            return resolveArgument((Bot) obj);
+    default Object resolveArgument(Object... objs) {
+        Object result = null;
+        for (Object obj : objs) {
+            result = resolveArgument(obj);
+            if (result != null) {
+                break;
+            }
         }
         return result;
     }
