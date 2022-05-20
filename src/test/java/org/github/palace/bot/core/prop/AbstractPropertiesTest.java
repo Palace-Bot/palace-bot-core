@@ -30,6 +30,6 @@ public class AbstractPropertiesTest {
         Assert.assertNotNull(pluginProperties);
 
         String str = pluginProperties.toString();
-        Assert.assertEquals(str, "id=hello-world&mainClass=org.github.word.cloud.App&version=1.0-SNAPSHOT");
+        Assert.assertEquals(str, "id=hello-world&mainClass=org.test.App&version=1.0-SNAPSHOT");
     }
 }
