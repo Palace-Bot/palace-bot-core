@@ -1,7 +1,7 @@
 package org.github.palace.bot.core.plugin;
 
 import net.mamoe.mirai.contact.MemberPermission;
-import org.github.palace.bot.core.cli.AbstractCommand;
+import org.github.palace.bot.core.LifeCycle;
 import org.github.palace.bot.core.cli.CommandSender;
 import org.github.palace.bot.core.cli.CommandSession;
 
@@ -9,22 +9,12 @@ import org.github.palace.bot.core.cli.CommandSession;
  * @author jihongyuan
  * @date 2022/5/12 15:42
  */
-public interface PluginManager {
+public interface PluginManager extends LifeCycle {
 
     /**
      * Loader plugins
      */
     void load();
-
-    /**
-     * Start plugin and command
-     */
-    void start();
-
-    /**
-     * Stop plugin and command
-     */
-    void stop();
 
     /**
      * 执行具体命令

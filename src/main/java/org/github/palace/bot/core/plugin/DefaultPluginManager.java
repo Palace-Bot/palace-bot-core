@@ -1,6 +1,7 @@
 package org.github.palace.bot.core.plugin;
 
 import lombok.extern.slf4j.Slf4j;
+import org.github.palace.bot.core.LifeCycle;
 
 /**
  * @author jihongyuan
@@ -9,8 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DefaultPluginManager extends AbstractPluginManager {
 
-    public DefaultPluginManager(String pluginPath, CommandManager commandManager) {
-        super(pluginPath, commandManager);
+    public DefaultPluginManager(String pluginPath) {
+        super(pluginPath);
     }
 
     /**
@@ -31,7 +32,7 @@ public class DefaultPluginManager extends AbstractPluginManager {
                 long start = System.currentTimeMillis();
                 try {
                     plugin.onLoad();
-                    commandManager.start(pluginWrapper);
+                    pluginWrapper.start();
                     log.info("start plugin: {}, time: {}ms", pluginWrapper.getPlugin().getName(), System.currentTimeMillis() - start);
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
@@ -43,7 +44,7 @@ public class DefaultPluginManager extends AbstractPluginManager {
     @Override
     public void stop() {
         for (PluginWrapper pluginWrapper : plugins) {
-            commandManager.stop(pluginWrapper);
+            pluginWrapper.stop();
         }
     }
 

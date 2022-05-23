@@ -3,12 +3,12 @@ package org.github.palace.bot.core.plugin;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.contact.MemberPermission;
-import org.github.palace.bot.core.cli.AbstractCommand;
 import org.github.palace.bot.core.cli.CommandSender;
 import org.github.palace.bot.core.cli.CommandSession;
 import org.github.palace.bot.core.loader.PluginClassLoader;
 import org.github.palace.bot.utils.ZipUtil;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.*;
 
@@ -32,16 +32,15 @@ public abstract class AbstractPluginManager implements PluginManager {
      * 命令管理器
      */
     @Setter
-    protected CommandManager commandManager;
+    protected CommandExecutor commandExecutor = new CommandExecutor();
 
     /**
      * 插件集合
      */
     protected final List<PluginWrapper> plugins;
 
-    public AbstractPluginManager(String pluginPath, CommandManager commandManager) {
+    public AbstractPluginManager(String pluginPath) {
         this.pluginPath = pluginPath;
-        this.commandManager = commandManager;
         this.plugins = new ArrayList<>();
     }
 
@@ -86,24 +85,32 @@ public abstract class AbstractPluginManager implements PluginManager {
 
     @Override
     public void executeCommand(CommandSender commandSender, AbstractCommand command, MemberPermission permission, CommandSession session) {
-        commandManager.executeCommand(commandSender, command, permission, session);
+        commandExecutor.executeCommand(commandSender, command, permission, session);
     }
 
+    @Nullable
     @Override
     public AbstractCommand matchCommand(String commandName) {
-        if (commandName.startsWith(commandManager.getCommandPrefix()) && commandName.length() > 1) {
-            for (PluginWrapper pluginWrapper : plugins) {
-                AbstractCommand command = commandManager.matchCommand(pluginWrapper, commandName);
+        if (commandName.length() < 1) {
+            return null;
+        }
+
+        AbstractCommand command = null;
+        for (PluginWrapper pluginWrapper : plugins) {
+            if (commandName.startsWith(pluginWrapper.getProperties().commandPrefix)) {
+                command = pluginWrapper.getCommandManager().matchCommand(commandName);
                 if (command != null) {
-                    return command;
+                    break;
                 }
             }
+
         }
-        return null;
+        return command;
     }
 
     @Override
     public AbstractCommand matchCommand(String commandName, AbstractCommand command) {
-        return commandManager.matchCommand(commandName, command);
+        return commandExecutor.matchCommand(commandName, command);
     }
+
 }

@@ -2,9 +2,10 @@ package org.github.palace.bot.core.plugin;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.github.palace.bot.core.cli.AbstractCommand;
+import org.github.palace.bot.core.LifeCycle;
 
-import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * 插件包装器
@@ -14,7 +15,7 @@ import java.util.Set;
  */
 @Getter
 @Slf4j
-public class PluginWrapper {
+public class PluginWrapper implements LifeCycle {
 
     /**
      * plugin properties
@@ -23,12 +24,18 @@ public class PluginWrapper {
 
     private final ClassLoader pluginLoader;
 
+    private final CommandManager commandManager;
+
+    @Getter
+    private final ScheduledExecutorService pusherExecutorService = Executors.newSingleThreadScheduledExecutor();
+
     @Getter
     private Plugin plugin;
 
     public PluginWrapper(PluginProperties properties, ClassLoader pluginLoader) {
         this.properties = properties;
         this.pluginLoader = pluginLoader;
+        this.commandManager = new CommandManager(properties.commandPrefix, this);
     }
 
     /**
@@ -45,7 +52,18 @@ public class PluginWrapper {
         this.plugin = plugin;
     }
 
-    public Set<AbstractCommand> getCommands() {
-        return plugin.getCommands();
+    @Override
+    public void start() {
+        for (AbstractCommand command : plugin.getCommands()) {
+            commandManager.addCommand(command);
+        }
+        commandManager.start();
     }
+
+    @Override
+    public void stop() {
+        pusherExecutorService.shutdown();
+        commandManager.stop();
+    }
+
 }

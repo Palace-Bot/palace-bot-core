@@ -1,4 +1,4 @@
-package org.github.palace.bot.core.cli;
+package org.github.palace.bot.core.plugin;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

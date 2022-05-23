@@ -7,7 +7,7 @@ import org.github.palace.bot.core.EventHandler;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.message.data.*;
-import org.github.palace.bot.core.cli.AbstractCommand;
+import org.github.palace.bot.core.plugin.AbstractCommand;
 import org.github.palace.bot.core.cli.CommandSender;
 import org.github.palace.bot.core.cli.CommandSession;
 import org.github.palace.bot.core.cli.support.CommandSessionHelper;

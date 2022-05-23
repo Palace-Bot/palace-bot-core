@@ -1,12 +1,11 @@
 package org.github.palace.bot.core.plugin;
 
 import net.mamoe.mirai.contact.MemberPermission;
-import org.github.palace.bot.core.cli.AbstractCommand;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * @author jihongyuan
@@ -40,7 +39,7 @@ public class PluginTest {
     public void register() {
         plugin.register(new AbstractCommand("hello", MemberPermission.MEMBER, false, "hello world") {
         });
-        Set<AbstractCommand> commands = plugin.getCommands();
+        List<AbstractCommand> commands = plugin.getCommands();
         Assert.assertEquals(1, commands.size());
     }
 

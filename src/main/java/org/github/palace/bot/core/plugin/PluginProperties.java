@@ -19,6 +19,8 @@ public class PluginProperties extends AbstractProperties {
 
     public String version;
 
+    public String commandPrefix = "/";
+
     public PluginProperties() {
         super(DEFAULT_PROPERTIES_FILE_NAME);
     }

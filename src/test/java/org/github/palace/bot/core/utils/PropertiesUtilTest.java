@@ -17,10 +17,11 @@ public class PropertiesUtilTest {
         Field[] propertiesKeys = PropertiesUtil.getPropertiesKeys(PluginProperties.class);
 
         Assert.assertNotNull(propertiesKeys);
-        Assert.assertEquals(propertiesKeys.length, 3);
+        Assert.assertEquals(propertiesKeys.length, 4);
         Assert.assertEquals(propertiesKeys[0].getName(), "id");
         Assert.assertEquals(propertiesKeys[1].getName(), "mainClass");
         Assert.assertEquals(propertiesKeys[2].getName(), "version");
+        Assert.assertEquals(propertiesKeys[3].getName(), "commandPrefix");
 
         // test cache
         propertiesKeys = PropertiesUtil.getPropertiesKeys(PluginProperties.class);

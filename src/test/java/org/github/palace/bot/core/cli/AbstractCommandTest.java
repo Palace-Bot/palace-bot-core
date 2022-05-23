@@ -2,6 +2,7 @@ package org.github.palace.bot.core.cli;
 
 import org.github.palace.bot.core.annotation.CommandHandler;
 import org.github.palace.bot.core.annotation.CommandPusher;
+import org.github.palace.bot.core.plugin.AbstractCommand;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

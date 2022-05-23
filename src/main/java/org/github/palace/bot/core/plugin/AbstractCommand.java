@@ -1,6 +1,7 @@
-package org.github.palace.bot.core.cli;
+package org.github.palace.bot.core.plugin;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.contact.MemberPermission;
 import org.github.palace.bot.core.annotation.ChildCommandHandler;
 import org.github.palace.bot.core.annotation.CommandHandler;
@@ -14,6 +15,7 @@ import java.util.*;
  * @author JHY3
  * @date 2022/3/31 15:44
  */
+@Slf4j
 public abstract class AbstractCommand extends Command {
 
     /**
@@ -60,7 +62,7 @@ public abstract class AbstractCommand extends Command {
                 else if (method.isAnnotationPresent(ChildCommandHandler.class)) {
                     ChildCommandHandler childCommandHandler = method.getAnnotation(ChildCommandHandler.class);
                     try {
-                        // TODO 待优化, 可以考虑字节码代理
+                        // TODO 需要共享子类成员，清除父类成员，还未想好实现方式 待优化, 可以考虑字节码代理
                         Constructor<? extends AbstractCommand> constructor = this.getClass().getDeclaredConstructor();
                         AbstractCommand command = constructor.newInstance();
                         command.setPrimaryName(childCommandHandler.primaryName());
@@ -71,7 +73,7 @@ public abstract class AbstractCommand extends Command {
                         command.putCommandHandler(method, null);
                         childrenCommand.add(command);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        log.error(e.getMessage(), e);
                     }
 
                 }

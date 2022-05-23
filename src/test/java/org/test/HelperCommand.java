@@ -5,7 +5,7 @@ import net.mamoe.mirai.contact.MemberPermission;
 import org.github.palace.bot.core.annotation.ChildCommandHandler;
 import org.github.palace.bot.core.annotation.CommandHandler;
 import org.github.palace.bot.core.annotation.CommandPusher;
-import org.github.palace.bot.core.cli.AbstractCommand;
+import org.github.palace.bot.core.plugin.AbstractCommand;
 import org.github.palace.bot.core.cli.CommandSender;
 
 /**

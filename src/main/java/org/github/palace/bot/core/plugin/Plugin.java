@@ -1,12 +1,9 @@
 package org.github.palace.bot.core.plugin;
 
 import lombok.Getter;
-import org.github.palace.bot.core.cli.AbstractCommand;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 插件主类
@@ -17,10 +14,7 @@ import java.util.concurrent.ScheduledExecutorService;
 public class Plugin {
 
     @Getter
-    protected Set<AbstractCommand> commands = new HashSet<>();
-
-    @Getter
-    private ScheduledExecutorService pusherExecutorService = Executors.newSingleThreadScheduledExecutor();
+    protected List<AbstractCommand> commands = new ArrayList<>();
 
     @Getter
     private String version;

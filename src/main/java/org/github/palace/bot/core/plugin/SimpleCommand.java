@@ -1,6 +1,7 @@
-package org.github.palace.bot.core.cli;
+package org.github.palace.bot.core.plugin;
 
 import net.mamoe.mirai.contact.MemberPermission;
+import org.github.palace.bot.core.plugin.AbstractCommand;
 
 /**
  * 目前无作用

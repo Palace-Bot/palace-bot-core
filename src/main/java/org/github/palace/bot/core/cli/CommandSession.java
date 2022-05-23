@@ -3,6 +3,7 @@ package org.github.palace.bot.core.cli;
 import lombok.Getter;
 import lombok.Setter;
 import net.mamoe.mirai.message.data.MessageChain;
+import org.github.palace.bot.core.plugin.AbstractCommand;
 
 /**
  * 命令执行状态
