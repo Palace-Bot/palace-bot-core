@@ -1,7 +1,6 @@
 package org.github.palace.bot.core.cli.resolver;
 
 import lombok.EqualsAndHashCode;
-import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.User;
 import org.github.palace.bot.core.cli.CommandSender;
 

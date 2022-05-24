@@ -26,7 +26,7 @@ public final class PropertiesUtil {
      *
      * @param clazz properties mapping class
      */
-    public synchronized static Field[] getPropertiesKeys(Class<?> clazz) {
+    public static synchronized Field[] getPropertiesKeys(Class<?> clazz) {
         if (PROPERTIES_MAP.containsKey(clazz)) {
             return PROPERTIES_MAP.get(clazz);
         }

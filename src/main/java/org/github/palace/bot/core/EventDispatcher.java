@@ -1,5 +1,6 @@
 package org.github.palace.bot.core;
 
+import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.event.Event;
 import net.mamoe.mirai.event.GlobalEventChannel;
 import net.mamoe.mirai.event.Listener;
@@ -15,6 +16,7 @@ import java.util.concurrent.CancellationException;
  * @author JHY
  * @date 2022/3/22 17:04
  */
+@Slf4j
 public class EventDispatcher {
     private static final Logger LOGGER = LoggerFactory.getLogger(EventDispatcher.class);
 
@@ -29,10 +31,10 @@ public class EventDispatcher {
         for (String handlerClass : handlerNames) {
             try {
                 Class<?> clazz = classLoader.loadClass(handlerClass);
-                EventHandler<Event> eventHandler = (EventHandler<Event>) clazz.newInstance();
+                EventHandler<Event> eventHandler = (EventHandler<Event>) clazz.getDeclaredConstructor().newInstance();
                 this.handlers.add(eventHandler);
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
             }
         }
     }

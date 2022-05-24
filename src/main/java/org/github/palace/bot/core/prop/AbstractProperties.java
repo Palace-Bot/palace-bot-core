@@ -14,7 +14,7 @@ import java.util.Properties;
 @Slf4j
 public abstract class AbstractProperties {
 
-    public AbstractProperties(String path) {
+    protected AbstractProperties(String path) {
         this(path, Thread.currentThread().getContextClassLoader());
     }
 
@@ -23,7 +23,7 @@ public abstract class AbstractProperties {
      *
      * @param path properties file path
      */
-    public AbstractProperties(String path, ClassLoader classLoader) {
+    protected AbstractProperties(String path, ClassLoader classLoader) {
         try (InputStream inputStream = classLoader.getResourceAsStream(path)) {
             Properties properties = new Properties();
             properties.load(inputStream);

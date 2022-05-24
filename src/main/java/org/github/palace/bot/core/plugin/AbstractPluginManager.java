@@ -39,7 +39,7 @@ public abstract class AbstractPluginManager implements PluginManager {
      */
     protected final List<PluginWrapper> plugins;
 
-    public AbstractPluginManager(String pluginPath) {
+    protected AbstractPluginManager(String pluginPath) {
         this.pluginPath = pluginPath;
         this.plugins = new ArrayList<>();
     }
