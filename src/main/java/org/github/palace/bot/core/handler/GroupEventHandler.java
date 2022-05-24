@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -48,24 +49,31 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
                 .ofNullable(subject.get(messageSource.getFromId()))
                 .orElseThrow(() -> new RuntimeException("[Group Message Event] member is null"));
 
-        CommandSession prepareCommandSession = commandSessionHelper.get(messageSource, CommandSession.State.PREPARE);
-        // 尝试处理determine
-        if (prepareCommandSession != null && commandSessionHelper.trySendDetermine(subject, messageSource, chain.get(1))) {
-            commandSessionHelper.finish(prepareCommandSession);
-            return;
-        }
+        AbstractCommand command = null;
 
-        AbstractCommand command;
+        // 获取待处理命令
+        List<CommandSession> prepareCommandSessions = commandSessionHelper.get(messageSource, CommandSession.State.PREPARE);
+
+        CommandSession prepareCommandSession = null;
         Exception exception = null;
 
         // at机器人 默认 at后面就是命令
         if (MiraiCodeUtil.isAtMe(chain.serializeToMiraiCode(), subject.getBot().getId())) {
             command = pluginManager.matchCommand(chain.get(2).contentToString().trim());
         }
+        // TODO 尝试处理determine
+//        else if (prepareCommandSessions != null && commandSessionHelper.trySendDetermine(subject, messageSource, chain.get(1))) {
+//            commandSessionHelper.finish(prepareCommandSession);
+//        }
+
         // 上下文中存在未处理命令
-        else if (prepareCommandSession != null) {
-            command = pluginManager.matchCommand(chain.get(1).contentToString().trim(), prepareCommandSession.getCommand());
+        else if (prepareCommandSessions != null) {
+            prepareCommandSession = prepareCommandSessions.stream()
+                    .filter(k -> pluginManager.matchCommand(chain.get(1).contentToString().trim(), k.getCommand()) != null)
+                    .findFirst().orElse(null);
+            command = prepareCommandSession != null ? prepareCommandSession.getCommand() : null;
         }
+
         // 普通命令
         else {
             command = pluginManager.matchCommand(chain.get(1).contentToString().trim());
@@ -73,6 +81,7 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
 
         if (command != null) {
             CommandSession commandSession = commandSessionHelper.put(messageSource, command, chain);
+            commandSession.runnable();
             try {
                 // 处理子命令
                 if (prepareCommandSession != null) {

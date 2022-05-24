@@ -3,6 +3,7 @@ package org.github.palace.bot.core.plugin;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.mamoe.mirai.contact.MemberPermission;
+import org.github.palace.bot.core.CommandScope;
 import org.github.palace.bot.core.annotation.ChildCommandHandler;
 import org.github.palace.bot.core.annotation.CommandHandler;
 import org.github.palace.bot.core.annotation.CommandPusher;
@@ -37,15 +38,19 @@ public abstract class AbstractCommand extends Command {
     private final List<AbstractCommand> childrenCommand = new ArrayList<>();
 
     protected AbstractCommand(String primaryName, String description) {
-        super(primaryName, MemberPermission.MEMBER, false, description);
+        this(primaryName, MemberPermission.MEMBER, CommandScope.GROUP_MEMBER, false, description);
     }
 
     protected AbstractCommand(String primaryName, MemberPermission permission, String description) {
-        super(primaryName, permission, false, description);
+        this(primaryName, permission, CommandScope.GROUP_MEMBER, false, description);
     }
 
     protected AbstractCommand(String primaryName, MemberPermission permission, boolean determine, String description) {
-        super(primaryName, permission, determine, description);
+        this(primaryName, permission, CommandScope.GROUP_MEMBER, determine, description);
+    }
+
+    protected AbstractCommand(String primaryName, MemberPermission permission, CommandScope commandScope, boolean determine, String description) {
+        super(primaryName, permission, commandScope, determine, description);
     }
 
     /**

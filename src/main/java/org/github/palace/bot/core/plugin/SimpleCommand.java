@@ -1,7 +1,7 @@
 package org.github.palace.bot.core.plugin;
 
 import net.mamoe.mirai.contact.MemberPermission;
-import org.github.palace.bot.core.plugin.AbstractCommand;
+import org.github.palace.bot.core.CommandScope;
 
 /**
  * 目前无作用
@@ -21,6 +21,10 @@ public class SimpleCommand extends AbstractCommand {
 
     public SimpleCommand(String primaryName, MemberPermission permission, boolean determine, String description) {
         super(primaryName, permission, determine, description);
+    }
+
+    protected SimpleCommand(String primaryName, MemberPermission permission, CommandScope commandScope, boolean determine, String description) {
+        super(primaryName, permission, commandScope, determine, description);
     }
 
 }

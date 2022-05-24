@@ -9,10 +9,10 @@ import java.util.*;
  * @author JHY
  * @date 2022/3/25 7:27
  */
-public final class MemberContextStack<T extends CommandSession> extends LinkedList<T> {
+public final class CommonSessionContextStack<T extends CommandSession> extends LinkedList<T> {
     private final int initialCapacity;
 
-    public MemberContextStack(int initialCapacity) {
+    public CommonSessionContextStack(int initialCapacity) {
         this.initialCapacity = initialCapacity;
     }
 
@@ -65,7 +65,7 @@ public final class MemberContextStack<T extends CommandSession> extends LinkedLi
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        MemberContextStack<?> that = (MemberContextStack<?>) o;
+        CommonSessionContextStack<?> that = (CommonSessionContextStack<?>) o;
         return initialCapacity == that.initialCapacity;
     }
 

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.mamoe.mirai.contact.MemberPermission;
+import org.github.palace.bot.core.CommandScope;
 
 import java.util.Objects;
 
@@ -25,34 +26,39 @@ public class Command {
      * <p>
      * 不允许包含 [空格][Char.isWhitespace], '.', ':'.
      */
-    private String primaryName;
+    protected String primaryName;
 
     /**
      * 为此指令分配的权限.
      */
-    private MemberPermission permission;
+    protected MemberPermission permission;
+
+    /**
+     * 为此指令分配作用域
+     */
+    protected CommandScope scope;
 
     /**
      * 为 true 时, 需要 Y/n 确定
      */
-    private boolean determine;
+    protected boolean determine;
 
     /**
      * 描述, 用于显示在 [BuiltInCommands.HelpCommand]
      */
-    private String description;
+    protected String description;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Command command = (Command) o;
-        return determine == command.determine && Objects.equals(primaryName, command.primaryName) && permission == command.permission && Objects.equals(description, command.description);
+        return determine == command.determine && Objects.equals(primaryName, command.primaryName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(primaryName, permission, determine, description);
+        return Objects.hash(primaryName);
     }
 
 }
