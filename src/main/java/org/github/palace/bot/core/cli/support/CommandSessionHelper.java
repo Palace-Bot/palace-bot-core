@@ -106,20 +106,20 @@ public class CommandSessionHelper {
         return commandSession.finish();
     }
 
-//    public boolean trySendDetermine(Group subject, MessageSource messageSource, SingleMessage singleMessage) {
-//        String determine = singleMessage.contentToString().trim().toLowerCase();
-//
-//        At at = new At(messageSource.getFromId());
-//        CommandSession commandSession = this.get(messageSource, State.PREPARE);
-//
-//        if ("y".equals(determine) || "yes".equals(determine)) {
-//            subject.sendMessage(at.plus(" ").plus(commandSession.getCommand().getPrimaryName()).plus(" 命令正在处理中..."));
-//            subject.sendMessage(at.plus(" ").plus(commandSession.getCommand().getPrimaryName()).plus(" 已结束..."));
-//            return true;
-//        } else if ("n".equals(determine) || "no".equals(determine)) {
-//            subject.sendMessage(at.plus(" ").plus(commandSession.getCommand().getPrimaryName()).plus(" 命令已拒绝"));
-//            return true;
-//        }
-//        return false;
-//    }
+    public CommandSession trySendDetermine(Group subject, MessageSource messageSource, SingleMessage singleMessage) {
+        String determine = singleMessage.contentToString().trim().toLowerCase();
+
+        List<CommandSession> sessions = this.get(messageSource, State.PREPARE);
+
+        At at = new At(messageSource.getFromId());
+        for (CommandSession session : sessions) {
+            if ("y".equals(determine) || "yes".equals(determine)) {
+                subject.sendMessage(at.plus(" ").plus(session.getCommand().getPrimaryName()).plus(" 命令正在处理中..."));
+                return session;
+            } else if ("n".equals(determine) || "no".equals(determine)) {
+                subject.sendMessage(at.plus(" ").plus(session.getCommand().getPrimaryName()).plus(" 命令已拒绝"));
+            }
+        }
+        return null;
+    }
 }

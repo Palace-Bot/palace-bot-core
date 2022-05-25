@@ -3,7 +3,6 @@ package org.github.palace.bot.core.plugin;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import net.mamoe.mirai.contact.MemberPermission;
 import org.github.palace.bot.core.CommandScope;
 
@@ -17,7 +16,6 @@ import java.util.Objects;
  */
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class Command {
 
@@ -53,12 +51,12 @@ public class Command {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Command command = (Command) o;
-        return determine == command.determine && Objects.equals(primaryName, command.primaryName);
+        return Objects.equals(primaryName, command.primaryName) && permission == command.permission;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(primaryName);
+        return Objects.hash(primaryName, permission);
     }
 
 }

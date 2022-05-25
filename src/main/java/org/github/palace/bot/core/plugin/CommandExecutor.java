@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class CommandExecutor {
 
-    public void executeCommand(CommandSender commandSender, AbstractCommand command, MemberPermission permission, CommandSession session) {
+    public void executeCommand(CommandSender commandSender, AbstractCommand command,  CommandSession session) {
         // (1) Get command method parameterTypes
         Map<Method, Class<?>[]> methodParameterTypeMap = new LinkedHashMap<>();
         for (Method method : command.getCommandHandlerMethodMap().keySet()) {

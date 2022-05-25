@@ -78,30 +78,31 @@ public abstract class AbstractPluginManager implements PluginManager {
     }
 
     @Override
-    public void executeCommand(CommandSender commandSender, AbstractCommand command, MemberPermission permission) {
-        executeCommand(commandSender, command, permission, null);
+    public void executeCommand(CommandSender commandSender, AbstractCommand command) {
+        executeCommand(commandSender, command, null);
     }
 
 
     @Override
-    public void executeCommand(CommandSender commandSender, AbstractCommand command, MemberPermission permission, CommandSession session) {
-        commandExecutor.executeCommand(commandSender, command, permission, session);
+    public void executeCommand(CommandSender commandSender, AbstractCommand command, CommandSession session) {
+        commandExecutor.executeCommand(commandSender, command, session);
     }
 
     @Nullable
     @Override
-    public AbstractCommand matchCommand(String commandName) {
+    public AbstractCommand matchCommand(String commandName, MemberPermission permission) {
         if (commandName.length() < 1) {
             return null;
         }
 
         AbstractCommand command = null;
+        // TODO 同名命令 存在权限优先级问题
         for (PluginWrapper pluginWrapper : plugins) {
-            if (commandName.startsWith(pluginWrapper.getProperties().commandPrefix)) {
-                command = pluginWrapper.getCommandManager().matchCommand(commandName);
-                if (command != null) {
-                    break;
-                }
+            if (
+                    commandName.startsWith(pluginWrapper.getProperties().commandPrefix) &&
+                    (command = pluginWrapper.getCommandManager().matchCommand(commandName)) != null &&
+                    permission.compareTo(command.getPermission()) >= 0) {
+                break;
             }
 
         }
@@ -109,7 +110,7 @@ public abstract class AbstractPluginManager implements PluginManager {
     }
 
     @Override
-    public AbstractCommand matchCommand(String commandName, AbstractCommand command) {
+    public AbstractCommand matchCommand(String commandName, AbstractCommand command, MemberPermission permission) {
         return commandExecutor.matchCommand(commandName, command);
     }
 

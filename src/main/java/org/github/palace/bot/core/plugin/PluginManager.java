@@ -21,19 +21,17 @@ public interface PluginManager extends LifeCycle {
      *
      * @param commandSender 命令发送者
      * @param command       命令
-     * @param permission    用户权限
      */
-    void executeCommand(CommandSender commandSender, AbstractCommand command, MemberPermission permission);
+    void executeCommand(CommandSender commandSender, AbstractCommand command);
 
     /**
      * 执行具体命令
      *
      * @param commandSender 命令发送者
      * @param command       命令
-     * @param permission    用户权限
      * @param session       子命令，父命令session, 否则当前命令session
      */
-    void executeCommand(CommandSender commandSender, AbstractCommand command, MemberPermission permission, CommandSession session);
+    void executeCommand(CommandSender commandSender, AbstractCommand command, CommandSession session);
 
     /**
      * 匹配命令
@@ -41,7 +39,7 @@ public interface PluginManager extends LifeCycle {
      * @param commandName 命令名称（不加前缀 如：/）
      * @return command
      */
-    AbstractCommand matchCommand(String commandName);
+    AbstractCommand matchCommand(String commandName,MemberPermission permission);
 
 
     /**
@@ -50,6 +48,6 @@ public interface PluginManager extends LifeCycle {
      * @param commandName 命令名称（不加前缀 如：/）
      * @return command
      */
-    AbstractCommand matchCommand(String commandName, AbstractCommand command);
+    AbstractCommand matchCommand(String commandName, AbstractCommand command, MemberPermission permission);
 
 }

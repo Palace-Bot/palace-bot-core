@@ -49,63 +49,69 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
                 .ofNullable(subject.get(messageSource.getFromId()))
                 .orElseThrow(() -> new RuntimeException("[Group Message Event] member is null"));
 
-        AbstractCommand command = null;
+        AbstractCommand command;
 
         // 获取待处理命令
         List<CommandSession> prepareCommandSessions = commandSessionHelper.get(messageSource, CommandSession.State.PREPARE);
 
-        CommandSession prepareCommandSession = null;
         Exception exception = null;
+        CommandSession prepareCommandSession = null;
 
         // at机器人 默认 at后面就是命令
         if (MiraiCodeUtil.isAtMe(chain.serializeToMiraiCode(), subject.getBot().getId())) {
-            command = pluginManager.matchCommand(chain.get(2).contentToString().trim());
+            command = pluginManager.matchCommand(chain.get(2).contentToString().trim(), member.getPermission());
         }
-        // TODO 尝试处理determine
-//        else if (prepareCommandSessions != null && commandSessionHelper.trySendDetermine(subject, messageSource, chain.get(1))) {
-//            commandSessionHelper.finish(prepareCommandSession);
-//        }
-
+        // 上下文中存在确认命令
+        else if (prepareCommandSessions != null && (prepareCommandSession = commandSessionHelper.trySendDetermine(subject, messageSource, chain.get(1))) != null) {
+            command = prepareCommandSession.getCommand();
+        }
         // 上下文中存在未处理命令
         else if (prepareCommandSessions != null) {
             prepareCommandSession = prepareCommandSessions.stream()
-                    .filter(k -> pluginManager.matchCommand(chain.get(1).contentToString().trim(), k.getCommand()) != null)
+                    .filter(k -> pluginManager.matchCommand(chain.get(1).contentToString().trim(), k.getCommand(), member.getPermission()) != null)
                     .findFirst().orElse(null);
             command = prepareCommandSession != null ? prepareCommandSession.getCommand() : null;
         }
-
         // 普通命令
         else {
-            command = pluginManager.matchCommand(chain.get(1).contentToString().trim());
+            command = pluginManager.matchCommand(chain.get(1).contentToString().trim(), member.getPermission());
         }
 
         if (command != null) {
             CommandSession commandSession = commandSessionHelper.put(messageSource, command, chain);
             commandSession.runnable();
             try {
-                // 处理子命令
-                if (prepareCommandSession != null) {
-                    pluginManager.executeCommand(CommandSender.toCommandSender(event), commandSession.getCommand(), member.getPermission(), prepareCommandSession);
-                } else {
-                    pluginManager.executeCommand(CommandSender.toCommandSender(event), command, member.getPermission(), commandSession);
+                // 等待确认
+                if (prepareCommandSession == null && command.isDetermine()) {
+                    subject.sendMessage(new At(member.getId()).plus(" Is this ok [Y/n]:"));
+                    commandSessionHelper.prepare(commandSession);
+                    return;
                 }
+                // 执行确认命令
+                else if (prepareCommandSession != null && command.isDetermine()) {
+                    pluginManager.executeCommand(CommandSender.toCommandSender(event), command, commandSession);
+                }
+                // 处理子命令
+                else if (prepareCommandSession != null) {
+                    pluginManager.executeCommand(CommandSender.toCommandSender(event), commandSession.getCommand(), prepareCommandSession);
+                } else {
+                    pluginManager.executeCommand(CommandSender.toCommandSender(event), command, commandSession);
+                }
+
             } catch (Exception e) {
                 exception = e;
             }
 
+            // 命令session处理
             if (exception == null) {
-                // 重复确定
-                if (command.isDetermine()) {
-                    subject.sendMessage(new At(member.getId()).plus(" Is this ok [Y/n]:"));
-                    commandSessionHelper.prepare(commandSession);
-                }
                 // 存在命令
-                else if (command.hasChildrenCommand()) {
+                if (command.hasChildrenCommand()) {
                     commandSessionHelper.prepare(commandSession);
                 } else {
                     commandSessionHelper.finish(commandSession);
                 }
             } else {
+                // TODO 聊天显示不直观
                 // 异常发送给使用者
                 Bot bot = event.getBot();
                 Friend friend = bot.getFriend(BaseConstant.USER);
