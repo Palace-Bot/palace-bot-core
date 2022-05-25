@@ -38,6 +38,7 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
 
     private final PluginManager pluginManager = Loc.get(PluginManager.class);
 
+    // TODO 太烂了，准备重构
     @Override
     public void onEvent(GroupMessageEvent event) {
         Group subject = event.getSubject();
@@ -49,13 +50,13 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
                 .ofNullable(subject.get(messageSource.getFromId()))
                 .orElseThrow(() -> new RuntimeException("[Group Message Event] member is null"));
 
-        AbstractCommand command;
 
         // 获取待处理命令
         List<CommandSession> prepareCommandSessions = commandSessionHelper.get(messageSource, CommandSession.State.PREPARE);
 
-        Exception exception = null;
         CommandSession prepareCommandSession = null;
+        AbstractCommand command = null;
+        Exception exception = null;
 
         // at机器人 默认 at后面就是命令
         if (MiraiCodeUtil.isAtMe(chain.serializeToMiraiCode(), subject.getBot().getId())) {
@@ -65,12 +66,14 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
         else if (prepareCommandSessions != null && (prepareCommandSession = commandSessionHelper.trySendDetermine(subject, messageSource, chain.get(1))) != null) {
             command = prepareCommandSession.getCommand();
         }
-        // 上下文中存在未处理命令
+        // 上下文中存在未处理命令, 匹配子命令
         else if (prepareCommandSessions != null) {
-            prepareCommandSession = prepareCommandSessions.stream()
-                    .filter(k -> pluginManager.matchCommand(chain.get(1).contentToString().trim(), k.getCommand(), member.getPermission()) != null)
-                    .findFirst().orElse(null);
-            command = prepareCommandSession != null ? prepareCommandSession.getCommand() : null;
+            for (CommandSession commandSession : prepareCommandSessions) {
+                if ((command = pluginManager.matchCommand(chain.get(1).contentToString().trim(), commandSession.getCommand(), member.getPermission())) != null) {
+                    prepareCommandSession = commandSession;
+                    break;
+                }
+            }
         }
         // 普通命令
         else {
@@ -78,8 +81,7 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
         }
 
         if (command != null) {
-            CommandSession commandSession = commandSessionHelper.put(messageSource, command, chain);
-            commandSession.runnable();
+            CommandSession commandSession = prepareCommandSession == null ? commandSessionHelper.put(messageSource, command, chain).runnable() : prepareCommandSession;
             try {
                 // 等待确认
                 if (prepareCommandSession == null && command.isDetermine()) {
@@ -93,7 +95,7 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
                 }
                 // 处理子命令
                 else if (prepareCommandSession != null) {
-                    pluginManager.executeCommand(CommandSender.toCommandSender(event), commandSession.getCommand(), prepareCommandSession);
+                    pluginManager.executeCommand(CommandSender.toCommandSender(event), command, commandSession);
                 } else {
                     pluginManager.executeCommand(CommandSender.toCommandSender(event), command, commandSession);
                 }
@@ -107,7 +109,7 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
                 // 存在命令
                 if (command.hasChildrenCommand()) {
                     commandSessionHelper.prepare(commandSession);
-                } else {
+                } else if (prepareCommandSessions == null) {
                     commandSessionHelper.finish(commandSession);
                 }
             } else {
