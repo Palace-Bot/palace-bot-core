@@ -12,7 +12,7 @@ import static org.github.palace.bot.core.cli.CommandSession.State;
  * @author jihongyuan
  * @date 2022/5/24 9:05
  */
-public class IdMap<V extends CommandSession> extends HashMap<Long, CommonSessionContextStack<V>> {
+public class IdMap<V extends CommandSession> extends HashMap<Long, CommonSessionContext<V>> {
 
     @Nullable
     public V get(Long id, State state) {
@@ -32,13 +32,13 @@ public class IdMap<V extends CommandSession> extends HashMap<Long, CommonSession
     }
 
     public V put(Long id, V commandSession) {
-        val stack = super.computeIfAbsent(id, k -> new CommonSessionContextStack<>(100));
+        val stack = super.computeIfAbsent(id, k -> new CommonSessionContext<>(100));
         stack.add(commandSession);
         return commandSession;
     }
 
     @Nullable
-    private CommonSessionContextStack<V> get(Long id) {
+    private CommonSessionContext<V> get(Long id) {
         return super.get(id);
     }
 

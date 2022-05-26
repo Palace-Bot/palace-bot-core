@@ -54,52 +54,57 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
         // 获取待处理命令
         List<CommandSession> prepareCommandSessions = commandSessionHelper.get(messageSource, CommandSession.State.PREPARE);
 
-        CommandSession prepareCommandSession = null;
-        AbstractCommand command = null;
         Exception exception = null;
+        AbstractCommand command = null;
+        CommandSession prepareCommandSession = null;
 
-        // at机器人 默认 at后面就是命令
-        if (MiraiCodeUtil.isAtMe(chain.serializeToMiraiCode(), subject.getBot().getId())) {
-            command = pluginManager.matchCommand(chain.get(2).contentToString().trim(), member.getPermission());
-        }
-        // 上下文中存在确认命令
-        else if (prepareCommandSessions != null && (prepareCommandSession = commandSessionHelper.trySendDetermine(subject, messageSource, chain.get(1))) != null) {
-            command = prepareCommandSession.getCommand();
-        }
-        // 上下文中存在未处理命令, 匹配子命令
-        else if (prepareCommandSessions != null) {
-            for (CommandSession commandSession : prepareCommandSessions) {
-                if ((command = pluginManager.matchCommand(chain.get(1).contentToString().trim(), commandSession.getCommand(), member.getPermission())) != null) {
-                    prepareCommandSession = commandSession;
-                    break;
+
+        // 上下文中存在未处理命令
+        if (!prepareCommandSessions.isEmpty()) {
+            // 上下文中存在确认命令
+            if ((prepareCommandSession = commandSessionHelper.trySendDetermine(subject, messageSource, chain.get(1))) != null) {
+                command = prepareCommandSession.getCommand();
+            }
+            // 子命令
+            else {
+                for (CommandSession commandSession : prepareCommandSessions) {
+                    if ((command = pluginManager.matchCommand(chain.get(1).contentToString().trim(), commandSession.getCommand(), member.getPermission())) != null) {
+                        prepareCommandSession = commandSession;
+                        break;
+                    }
                 }
             }
         }
-        // 普通命令
-        else {
-            command = pluginManager.matchCommand(chain.get(1).contentToString().trim(), member.getPermission());
+
+        if (command == null) {
+            // at机器人 默认 at后面就是命令
+            if (MiraiCodeUtil.isAtMe(chain.serializeToMiraiCode(), subject.getBot().getId())) {
+                command = pluginManager.matchCommand(chain.get(2).contentToString().trim(), member.getPermission());
+                for (CommandSession commandSession : prepareCommandSessions) {
+                    if (commandSession.getCommand().equals(command)) {
+                        return;
+                    }
+                }
+            }
+            // 普通命令
+            else {
+                command = pluginManager.matchCommand(chain.get(1).contentToString().trim(), member.getPermission());
+            }
         }
 
+
         if (command != null) {
-            CommandSession commandSession = prepareCommandSession == null ? commandSessionHelper.put(messageSource, command, chain).runnable() : prepareCommandSession;
+            CommandSession commandSession = prepareCommandSession == null ? commandSessionHelper.put(messageSource, command).runnable() : prepareCommandSession;
+
             try {
                 // 等待确认
                 if (prepareCommandSession == null && command.isDetermine()) {
                     subject.sendMessage(new At(member.getId()).plus(" Is this ok [Y/n]:"));
                     commandSessionHelper.prepare(commandSession);
                     return;
-                }
-                // 执行确认命令
-                else if (prepareCommandSession != null && command.isDetermine()) {
-                    pluginManager.executeCommand(CommandSender.toCommandSender(event), command, commandSession);
-                }
-                // 处理子命令
-                else if (prepareCommandSession != null) {
-                    pluginManager.executeCommand(CommandSender.toCommandSender(event), command, commandSession);
                 } else {
                     pluginManager.executeCommand(CommandSender.toCommandSender(event), command, commandSession);
                 }
-
             } catch (Exception e) {
                 exception = e;
             }
@@ -109,7 +114,7 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
                 // 存在命令
                 if (command.hasChildrenCommand()) {
                     commandSessionHelper.prepare(commandSession);
-                } else if (prepareCommandSessions == null) {
+                } else if (prepareCommandSession == null) {
                     commandSessionHelper.finish(commandSession);
                 }
             } else {
@@ -127,13 +132,10 @@ public class GroupEventHandler implements EventHandler<GroupMessageEvent> {
             return;
         }
 
-        // data
+        // TODO data模块待重构考虑插件 data
         MessageService messageService = new MessageServiceImpl();
         // 保存聊天记录
-        messageService.save(subject.getId(), MessageDO.builder()
-                .memberId(member.getId())
-                .message(chain.stream().map(SingleMessage::contentToString).collect(Collectors.joining()))
-                .createAt(new Date()).build());
+        messageService.save(subject.getId(), MessageDO.builder().memberId(member.getId()).message(chain.stream().map(SingleMessage::contentToString).collect(Collectors.joining())).createAt(new Date()).build());
     }
 
     @Override

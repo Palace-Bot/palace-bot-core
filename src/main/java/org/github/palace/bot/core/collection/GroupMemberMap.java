@@ -38,7 +38,7 @@ public class GroupMemberMap<V extends CommandSession> extends HashMap<Long, IdMa
     }
 
     @Nullable
-    private CommonSessionContextStack<V> get(Long group, Long qq) {
+    private CommonSessionContext<V> get(Long group, Long qq) {
         val memberMap = super.get(group);
         if (memberMap != null) {
             return memberMap.get(qq);

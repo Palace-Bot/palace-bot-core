@@ -2,7 +2,6 @@ package org.github.palace.bot.core.cli.support;
 
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.message.data.At;
-import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageSource;
 import net.mamoe.mirai.message.data.SingleMessage;
 import org.github.palace.bot.core.CommandScope;
@@ -10,8 +9,8 @@ import org.github.palace.bot.core.collection.IdMap;
 import org.github.palace.bot.core.plugin.AbstractCommand;
 import org.github.palace.bot.core.cli.CommandSession;
 import org.github.palace.bot.core.collection.GroupMemberMap;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,12 +45,10 @@ public class CommandSessionHelper {
      *
      * @param messageSource 消息源
      * @param command       command
-     * @param chain         消息链
      * @return commandSession
      */
-    @NotNull
-    public CommandSession put(MessageSource messageSource, AbstractCommand command, MessageChain chain) {
-        CommandSession commandSession = new CommandSession(command, chain).runnable();
+    public CommandSession put(MessageSource messageSource, AbstractCommand command) {
+        CommandSession commandSession = new CommandSession(command).runnable();
         CommandScope scope = command.getScope();
         switch (scope) {
             case MEMBER:
@@ -74,6 +71,7 @@ public class CommandSessionHelper {
      * @param state         session state
      * @return sort -> group member -> group -> member
      */
+    @Nonnull
     public List<CommandSession> get(MessageSource messageSource, State state) {
         List<CommandSession> sessions = new ArrayList<>();
 
