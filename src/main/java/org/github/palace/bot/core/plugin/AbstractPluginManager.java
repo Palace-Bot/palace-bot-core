@@ -10,6 +10,7 @@ import org.github.palace.bot.utils.ZipUtil;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.net.URL;
 import java.util.*;
 
 
@@ -60,7 +61,10 @@ public abstract class AbstractPluginManager implements PluginManager {
                 long start = System.currentTimeMillis();
 
                 // (2) 创建类加载器
-                PluginClassLoader pluginClassLoader = new PluginClassLoader(path);
+                List<URL> urls = new ArrayList<>();
+                urls.addAll(Arrays.asList(ZipUtil.getResources(path)));
+                urls.addAll(Arrays.asList(ZipUtil.getResources(path + "/lib")));
+                PluginClassLoader pluginClassLoader = new PluginClassLoader(urls.toArray(new URL[0]));
 
                 // (3) TODO 解析jar包中配置文件
                 PluginProperties pluginProperties = new PluginProperties(pluginClassLoader);
