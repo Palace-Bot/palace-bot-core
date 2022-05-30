@@ -1,4 +1,4 @@
-package org.github.palace.bot.core.cli;
+package org.github.palace.bot.core.plugin;
 
 import org.github.palace.bot.core.annotation.CommandHandler;
 import org.github.palace.bot.core.annotation.CommandPusher;
