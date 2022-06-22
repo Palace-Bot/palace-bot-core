@@ -1,5 +1,8 @@
 package org.github.palace.bot.asm;
 
+import lombok.Getter;
+import org.github.palace.bot.utils.ClassUtils;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -11,6 +14,7 @@ import java.util.function.Consumer;
  * @author jihongyuan
  * @date 2022/6/21 10:52
  */
+@Getter
 public class MergedAnnotationReadingVisitor<A extends Annotation> extends AnnotationVisitor {
 
     private final Map<String, Object> attributes = new LinkedHashMap<>(4);
@@ -30,8 +34,9 @@ public class MergedAnnotationReadingVisitor<A extends Annotation> extends Annota
     }
 
     @Override
-    public AnnotationVisitor visitArray(String elementName) {
-        return new ArrayVisitor(value -> attributes.put(elementName, value));
+    public void visitEnum(String elementName, String descriptor, String value) {
+        String className = ClassUtils.resolveDescriptor(descriptor);
+        attributes.put(elementName, Enum.valueOf(ClassUtils.forName(className), value));
     }
 
     @Override
@@ -40,7 +45,8 @@ public class MergedAnnotationReadingVisitor<A extends Annotation> extends Annota
     }
 
     @Override
-    public void visitEnum(String elementName, String descriptor, String value) {
+    public AnnotationVisitor visitArray(String elementName) {
+        return new ArrayVisitor(value -> attributes.put(elementName, value));
     }
 
     @Override
@@ -65,6 +71,11 @@ public class MergedAnnotationReadingVisitor<A extends Annotation> extends Annota
             this.consumer = consumer;
         }
 
+        @Override
+        public void visitEnum(String elementName, String descriptor, String value) {
+            String className = ClassUtils.resolveDescriptor(descriptor);
+            elements.add(Enum.valueOf(ClassUtils.forName(className), value));
+        }
 
         @Override
         public AnnotationVisitor visitAnnotation(String elementName, String descriptor) {
@@ -80,5 +91,6 @@ public class MergedAnnotationReadingVisitor<A extends Annotation> extends Annota
         public void visitEnd() {
             consumer.accept(elements.toArray());
         }
+
     }
 }
