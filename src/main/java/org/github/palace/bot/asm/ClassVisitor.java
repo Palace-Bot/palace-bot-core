@@ -9,16 +9,8 @@ import lombok.Getter;
 @Getter
 public abstract class ClassVisitor {
 
-    protected int access;
-    protected String name;
-    protected String superName;
-    protected String[] interfaces;
-
     public void visit(int access, String className, String superName, String[] interfaces) {
-        this.access = access;
-        this.name = className;
-        this.superName = superName;
-        this.interfaces = interfaces;
+        return;
     }
 
     public void visitField(FieldInfo fieldInfo) {

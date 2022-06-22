@@ -24,8 +24,8 @@ public class ClassVisitorTest {
             List<MergedAnnotation<?>> annotations = visitor.getAnnotations();
 
             System.out.println("access: " + visitor.getAccess());
-            System.out.println("name: " + visitor.getName());
-            System.out.println("superName" + visitor.getSuperName());
+            System.out.println("className: " + visitor.getClassName());
+            System.out.println("superName: " + visitor.getSuperName());
             System.out.println("interfaces" + Arrays.toString(visitor.getInterfaces()));
 
             for (MergedAnnotation<?> annotation : annotations) {
