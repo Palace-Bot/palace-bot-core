@@ -35,7 +35,6 @@ public abstract class ClassVisitor {
         return null;
     }
 
-    public void visitEnd() {
-    }
+    public abstract void visitEnd();
 
 }

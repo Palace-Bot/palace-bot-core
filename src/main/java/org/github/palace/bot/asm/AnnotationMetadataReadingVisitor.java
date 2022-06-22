@@ -35,9 +35,11 @@ public class AnnotationMetadataReadingVisitor extends ClassVisitor {
         return MergedAnnotationReadingVisitor.get(descriptor, annotations::add);
     }
 
+    // TODO more attributes annotation
+
     @Override
     public void visitEnd() {
-        // TODO
-        super.visitEnd();
+        // TODO metadata
     }
+
 }

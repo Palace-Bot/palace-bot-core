@@ -3,6 +3,8 @@ package org.github.palace.bot.asm;
 import lombok.Data;
 import lombok.Getter;
 
+import java.util.function.IntFunction;
+
 /**
  * @author jihongyuan
  * @date 2022/6/6 14:31
@@ -14,12 +16,19 @@ public class ConstantInfo {
     public ConstantInfo(int tag) {
         this.tag = tag;
     }
+
+    public void end() {
+        // ignore
+    }
 }
 
 @Getter
 class Utf8Info extends ConstantInfo {
 
-    // u2
+    /**
+     * u2
+     * CONSTANT_Utf8_info
+     */
     private final Integer length;
 
     private final String bytes;
@@ -37,22 +46,30 @@ class Utf8Info extends ConstantInfo {
                 ", bytes='" + bytes + '\'' +
                 '}';
     }
+
 }
 
 @Getter
 class IntegerInfo extends ConstantInfo {
-    // u4
+    /**
+     * u4
+     * CONSTANT_Integer_info
+     */
     private final Integer bytes;
 
     public IntegerInfo(Integer bytes) {
         super(CpTag.CONSTANT_INTEGER_TAG);
         this.bytes = bytes;
     }
+
 }
 
 @Getter
 class FloatInfo extends ConstantInfo {
-    // u4
+    /**
+     * u4
+     * CONSTANT_Float_info
+     */
     private final float bytes;
 
     public FloatInfo(float bytes) {
@@ -63,18 +80,25 @@ class FloatInfo extends ConstantInfo {
 
 @Getter
 class LongInfo extends ConstantInfo {
-    // u8
+    /**
+     * u8
+     * CONSTANT_Long_info
+     */
     private final long value;
 
     public LongInfo(long value) {
         super(CpTag.CONSTANT_LONG_TAG);
         this.value = value;
     }
+
 }
 
 @Getter
 class DoubleInfo extends ConstantInfo {
-    // u8
+    /**
+     * u8
+     * CONSTANT_Double_info
+     */
     private final double value;
 
     public DoubleInfo(double value) {
@@ -85,13 +109,26 @@ class DoubleInfo extends ConstantInfo {
 
 @Getter
 class ClassInfo extends ConstantInfo {
-    // 2
+    /**
+     * CONSTANT_Class_info
+     */
     private final Integer index;
 
-    public ClassInfo(Integer index) {
+    private String className;
+
+    private final IntFunction<String> fun;
+
+    public ClassInfo(Integer index, IntFunction<String> fun) {
         super(CpTag.CONSTANT_CLASS_TAG);
         this.index = index;
+        this.fun = fun;
     }
+
+    @Override
+    public void end() {
+        this.className = fun.apply(index);
+    }
+
 }
 
 @Getter
@@ -99,10 +136,21 @@ class StringInfo extends ConstantInfo {
     // 2
     private final Integer index;
 
-    public StringInfo(Integer index) {
+    private String value;
+
+    private final IntFunction<String> fun;
+
+    public StringInfo(Integer index, IntFunction<String> fun) {
         super(CpTag.CONSTANT_STRING_TAG);
         this.index = index;
+        this.fun = fun;
     }
+
+    @Override
+    public void end() {
+        this.value = fun.apply(index);
+    }
+
 }
 
 @Getter

@@ -55,7 +55,7 @@ public class ClassReader {
             switch (tag) {
                 case CpTag.CONSTANT_UTF8_TAG:
                     int len = readUnsignedShort(classBuffer.getU2());
-                    cpInfo = new Utf8Info(len,  new String(classBuffer.get(len)));
+                    cpInfo = new Utf8Info(len, new String(classBuffer.get(len)));
                     break;
                 case CpTag.CONSTANT_INTEGER_TAG:
                     cpInfo = new IntegerInfo(readInt(classBuffer.getU4()));
@@ -70,10 +70,10 @@ public class ClassReader {
                     cpInfo = new DoubleInfo(Double.longBitsToDouble(readLong(classBuffer.getU8())));
                     break;
                 case CpTag.CONSTANT_CLASS_TAG:
-                    cpInfo = new ClassInfo(readUnsignedShort(classBuffer.getU2()));
+                    cpInfo = new ClassInfo(readUnsignedShort(classBuffer.getU2()), this::readCpInfoUtf8);
                     break;
                 case CpTag.CONSTANT_STRING_TAG:
-                    cpInfo = new StringInfo(readUnsignedShort(classBuffer.getU2()));
+                    cpInfo = new StringInfo(readUnsignedShort(classBuffer.getU2()), this::readCpInfoUtf8);
                     break;
                 case CpTag.CONSTANT_FIELDREF_TAG:
                     cpInfo = new FieldrefInfo(readUnsignedShort(classBuffer.getU2()), readUnsignedShort(classBuffer.getU2()));
@@ -87,7 +87,6 @@ public class ClassReader {
                 case CpTag.CONSTANT_NAME_AND_TYPE_TAG:
                     cpInfo = new NameAndTypeInfo(readCpInfoUtf8(readUnsignedShort(classBuffer.getU2())), readCpInfoUtf8(readUnsignedShort(classBuffer.getU2())));
                     break;
-
                 case CpTag.CONSTANT_METHOD_HANDLE_TAG:
                     cpInfo = new MethodHandleInfo(readUnsignedShort(classBuffer.getU1()), readUnsignedShort(classBuffer.getU2()));
                     break;
@@ -113,10 +112,17 @@ public class ClassReader {
 
             // long 和 double 占两个常量池格子
             // {@link https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.4.5}
-            if(tag == CpTag.CONSTANT_LONG_TAG || tag == CpTag.CONSTANT_DOUBLE_TAG){
+            if (tag == CpTag.CONSTANT_LONG_TAG || tag == CpTag.CONSTANT_DOUBLE_TAG) {
                 currentCpInfoIndex += 1;
             }
         }
+
+        for (ConstantInfo cpInfo : cpInfos) {
+            if(cpInfo != null){
+                cpInfo.end();
+            }
+        }
+
     }
 
     public void accept(final ClassVisitor classVisitor) {
@@ -310,7 +316,7 @@ public class ClassReader {
      * Read cp info.
      */
     public String readCpInfoClass(int index) {
-        return readCpInfoUtf8(((ClassInfo) cpInfos[index]).getIndex());
+        return ((ClassInfo) cpInfos[index]).getClassName();
     }
 
     /**
