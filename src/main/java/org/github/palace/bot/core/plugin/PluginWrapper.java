@@ -3,6 +3,8 @@ package org.github.palace.bot.core.plugin;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.github.palace.bot.core.LifeCycle;
+import org.github.palace.bot.core.annotation.Application;
+import org.github.palace.bot.core.exception.PluginException;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -45,7 +47,15 @@ public class PluginWrapper implements LifeCycle {
         Plugin plugin = null;
         try {
             Class<?> clazz = pluginLoader.loadClass(properties.mainClass);
-            plugin = (Plugin) clazz.getDeclaredConstructor().newInstance();
+            if (clazz.isAnnotationPresent(Application.class)) {
+                plugin = new PluginDelegate(clazz.getAnnotation(Application.class), clazz);
+            } else if (clazz.isAssignableFrom(Plugin.class)) {
+                plugin = (Plugin) clazz.getDeclaredConstructor().newInstance();
+            } else {
+                throw new PluginException("Plugin main class must extends from Plugin or annotated with @Application");
+            }
+            plugin.onLoad();
+//            onLoadInternal();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

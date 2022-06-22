@@ -1,6 +1,7 @@
 package org.github.palace.bot.core.plugin;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,19 +12,26 @@ import java.util.List;
  * @author JHY
  * @date 2022/3/30 15:47
  */
+@Getter
+@Setter
 public class Plugin {
 
-    @Getter
     protected List<AbstractCommand> commands = new ArrayList<>();
 
-    @Getter
-    private String version;
+    /**
+     * 插件版本
+     */
+    protected String version;
 
-    @Getter
-    private String name;
+    /**
+     * 插件名称
+     */
+    protected String name;
 
-    @Getter
-    private String description;
+    /**
+     * 插件说明
+     */
+    protected String description;
 
     protected Plugin() {
     }
