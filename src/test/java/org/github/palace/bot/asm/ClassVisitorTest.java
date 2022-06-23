@@ -18,7 +18,7 @@ public class ClassVisitorTest {
     public void test() {
         try (InputStream is = new FileInputStream("F:\\idea_workspace\\Palace-Bot\\palace-bot-core\\target\\test-classes\\org\\test\\asm\\AsmClassTest.class")) {
             ClassReader classReader = new ClassReader(ClassReader.readStream(is));
-            AnnotationMetadataReadingVisitor visitor = new AnnotationMetadataReadingVisitor();
+            SimpleMetadataReadingVisitor visitor = new SimpleMetadataReadingVisitor();
             classReader.accept(visitor);
 
             List<MergedAnnotation<?>> annotations = visitor.getAnnotations();

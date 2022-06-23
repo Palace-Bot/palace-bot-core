@@ -9,7 +9,32 @@ public final class ClassUtils {
     }
 
     public static String resolveDescriptor(String descriptor) {
-        return descriptor.substring(1, descriptor.length() - 1).replaceAll("\\/", "\\.");
+        char tag = descriptor.charAt(0);
+
+        switch (tag) {
+            case 'B':
+                return "byte";
+            case 'C':
+                return "char";
+            case 'D':
+                return "double";
+            case 'F':
+                return "float";
+            case 'I':
+                return "int";
+            case 'J':
+                return "long";
+            case 'L':
+                return descriptor.substring(1, descriptor.length() - 1).replace("/", ".");
+            case 'S':
+                return "short";
+            case 'Z':
+                return "boolean";
+            case '[':
+                // TODO
+            default:
+                throw new IllegalArgumentException("Invalid descriptor: " + tag);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -17,7 +42,8 @@ public final class ClassUtils {
         try {
             return (T) Class.forName(className);
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
     }
+
 }

@@ -1,6 +1,7 @@
 package org.github.palace.bot.asm;
 
 import lombok.Getter;
+import org.github.palace.bot.utils.ClassUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,8 @@ import java.util.List;
  * @date 2022/6/21 10:02
  */
 @Getter
-public class AnnotationMetadataReadingVisitor extends ClassVisitor {
+public class SimpleMetadataReadingVisitor extends ClassVisitor {
+
     private int access;
 
     private String className;
@@ -20,6 +22,8 @@ public class AnnotationMetadataReadingVisitor extends ClassVisitor {
     private String[] interfaces;
 
     @Getter
+    private SimpleMetadata metadata;
+
     private final List<MergedAnnotation<?>> annotations = new ArrayList<>();
 
     @Override
@@ -32,14 +36,15 @@ public class AnnotationMetadataReadingVisitor extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitVisibleAnnotation(String descriptor) {
-        return MergedAnnotationReadingVisitor.get(descriptor, annotations::add);
+        String className = ClassUtils.resolveDescriptor(descriptor);
+        return MergedAnnotationReadingVisitor.get(ClassUtils.forName(className), annotations::add);
     }
 
     // TODO more attributes annotation
 
     @Override
     public void visitEnd() {
-        // TODO metadata
+        metadata = new SimpleMetadata(access, className, superName, interfaces, annotations);
     }
 
 }

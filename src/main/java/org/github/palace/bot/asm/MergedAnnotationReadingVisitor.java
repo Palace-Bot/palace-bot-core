@@ -19,12 +19,12 @@ public class MergedAnnotationReadingVisitor<A extends Annotation> extends Annota
 
     private final Map<String, Object> attributes = new LinkedHashMap<>(4);
 
-    private final String descriptor;
+    private final Class<A> annotationType;
 
     private final Consumer<MergedAnnotation<A>> consumer;
 
-    private MergedAnnotationReadingVisitor(String descriptor, Consumer<MergedAnnotation<A>> consumer) {
-        this.descriptor = descriptor;
+    private MergedAnnotationReadingVisitor(Class<A> annotationType, Consumer<MergedAnnotation<A>> consumer) {
+        this.annotationType = annotationType;
         this.consumer = consumer;
     }
 
@@ -41,7 +41,9 @@ public class MergedAnnotationReadingVisitor<A extends Annotation> extends Annota
 
     @Override
     public AnnotationVisitor visitAnnotation(String elementName, String descriptor) {
-        return new MergedAnnotationReadingVisitor<>(elementName, consumer);
+        String className = ClassUtils.resolveDescriptor(descriptor);
+        Class<A> type = ClassUtils.forName(className);
+        return new MergedAnnotationReadingVisitor<>(type, annotation -> this.attributes.put(elementName, annotation));
     }
 
     @Override
@@ -51,11 +53,11 @@ public class MergedAnnotationReadingVisitor<A extends Annotation> extends Annota
 
     @Override
     public void visitEnd() {
-        consumer.accept(new TypeMappedAnnotation<>(attributes));
+        consumer.accept(new MergedAnnotation<>(annotationType, attributes));
     }
 
-    static <A extends Annotation> AnnotationVisitor get(String descriptor, Consumer<MergedAnnotation<A>> consumer) {
-        return new MergedAnnotationReadingVisitor<>(descriptor, consumer);
+    static <A extends Annotation> AnnotationVisitor get(Class<A> annotationType, Consumer<MergedAnnotation<A>> consumer) {
+        return new MergedAnnotationReadingVisitor<>(annotationType, consumer);
     }
 
     /**
@@ -79,7 +81,9 @@ public class MergedAnnotationReadingVisitor<A extends Annotation> extends Annota
 
         @Override
         public AnnotationVisitor visitAnnotation(String elementName, String descriptor) {
-            return new MergedAnnotationReadingVisitor<>(elementName, elements::add);
+            String className = ClassUtils.resolveDescriptor(descriptor);
+            Class<A> type = ClassUtils.forName(className);
+            return new MergedAnnotationReadingVisitor<>(type, elements::add);
         }
 
         @Override
