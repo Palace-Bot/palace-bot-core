@@ -37,4 +37,7 @@ public abstract class ClassVisitor {
 
     public abstract void visitEnd();
 
+    public void visitSourceFile(String sourcefile) {
+    }
+
 }

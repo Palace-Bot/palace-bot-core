@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
  */
 public class CpTag {
 
+    private CpTag() {
+    }
+
     /** The tag value of CONSTANT_Class_info JVMS structures. */
     static final int CONSTANT_CLASS_TAG = 7;
 
@@ -60,6 +63,14 @@ public class CpTag {
 
     /** The tag value of CONSTANT_Package_info JVMS structures. */
     static final int CONSTANT_PACKAGE_TAG = 20;
+
+}
+
+class AttributesInfo{
+
+    static final String SOURCE_FILE = "SourceFile";
+
+    static final String RUNTIME_VISIBLE_ANNOTATIONS = "RuntimeVisibleAnnotations";
 
 }
 

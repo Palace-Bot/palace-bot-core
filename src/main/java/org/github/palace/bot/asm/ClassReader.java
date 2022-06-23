@@ -118,7 +118,7 @@ public class ClassReader {
         }
 
         for (ConstantInfo cpInfo : cpInfos) {
-            if(cpInfo != null){
+            if (cpInfo != null) {
                 cpInfo.end();
             }
         }
@@ -184,7 +184,12 @@ public class ClassReader {
         for (int i = 0; i < attributesCount; i++) {
             String descriptor = readCpInfoUtf8(readUnsignedShort(classBuffer.getU2()));
             int attrLen = readInt(classBuffer.getU4());
-            if ("RuntimeVisibleAnnotations".equals(descriptor)) {
+
+            // {@link https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html#jvms-4.7.10}
+            if (AttributesInfo.SOURCE_FILE.equals(descriptor)) {
+                classVisitor.visitSourceFile(readCpInfoUtf8(readUnsignedShort(classBuffer.getU2())));
+            }
+            else if (AttributesInfo.RUNTIME_VISIBLE_ANNOTATIONS.equals(descriptor)) {
                 // attrLength
                 int numAnnotations = readUnsignedShort(classBuffer.getU2());
                 while (numAnnotations-- > 0) {
