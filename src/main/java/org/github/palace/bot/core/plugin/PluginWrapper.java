@@ -155,7 +155,7 @@ public class PluginWrapper implements LifeCycle {
         // 类加载器
         for (MetadataReader candidate : candidates) {
             try {
-                Class<?> clazz = Class.forName(candidate.getClassMetadata().getClassName());
+                Class<?> clazz = pluginLoader.loadClass(candidate.getClassMetadata().getClassName());
                 plugin.register(new CommandDelegate(clazz.getAnnotation(org.github.palace.bot.core.annotation.Command.class), clazz));
             } catch (ClassNotFoundException e) {
                 if (log.isDebugEnabled()) {

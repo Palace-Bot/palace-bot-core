@@ -22,7 +22,7 @@ public class DefaultPluginManagerTest {
 
     @Before
     public void constructor() {
-        pluginManager = new DefaultPluginManager(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("")).getPath() + "/plugins");
+        pluginManager = new DefaultPluginManager(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("")).getPath() + "plugins");
     }
 
     @After
@@ -30,7 +30,7 @@ public class DefaultPluginManagerTest {
         pluginManager.stop();
         pluginManager = null;
         System.gc();
-        String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("")).getPath() + "/plugins" + PLUGIN_NAME;
+        String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("")).getPath() + "plugins" + PLUGIN_NAME;
         File file = new File(path);
         FileUtils.deleteDirectory(file);
     }

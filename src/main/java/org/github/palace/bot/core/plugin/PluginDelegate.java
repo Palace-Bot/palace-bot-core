@@ -1,23 +1,28 @@
 package org.github.palace.bot.core.plugin;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.github.palace.bot.core.annotation.Application;
 import org.github.palace.bot.core.annotation.OnDisable;
 import org.github.palace.bot.core.annotation.OnEnable;
 import org.github.palace.bot.core.annotation.OnLoad;
 import org.github.palace.bot.core.exception.PluginException;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author jihongyuan
  * @date 2022/6/1 16:40
  */
+@Slf4j
 public class PluginDelegate extends Plugin {
 
-    private Class<?> delegateClass;
+    private final Class<?> delegateClass;
 
     /**
      * 代理类
@@ -73,6 +78,11 @@ public class PluginDelegate extends Plugin {
             } catch (Exception e) {
                 throw new PluginException(e);
             }
+        } else {
+            try {
+                ReflectionUtils.findMethod(delegateClass, "onLoad").invoke(delegate);
+            } catch (Exception e) {
+            }
         }
     }
 
@@ -100,4 +110,21 @@ public class PluginDelegate extends Plugin {
         }
     }
 
+    @Override
+    public List<AbstractCommand> getCommands() {
+        try {
+            return (List<AbstractCommand>) ReflectionUtils.findMethod(delegateClass, "getCommands").invoke(delegate);
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    @Override
+    protected Plugin register(AbstractCommand command) {
+        try {
+            ReflectionUtils.findMethod(delegateClass, "register", AbstractCommand.class).invoke(delegate, command);
+        } catch (Exception e) {
+        }
+        return this;
+    }
 }

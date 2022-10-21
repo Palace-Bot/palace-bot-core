@@ -55,7 +55,7 @@ public class CommandManager implements LifeCycle {
     @Override
     public void start() {
         for (AbstractCommand command : commands) {
-            log.debug("start command: {}", command.getPrimaryName());
+            log.debug("Command: {}, PrimaryName: {}", command.getClass().getSimpleName(), command.getPrimaryName());
             Map<Method, CommandPusher> commandPushMethodMap = command.getCommandPusherMethodMap();
             commandPushMethodMap.forEach((method, commandPusher) -> plugin.getPusherExecutorService().scheduleAtFixedRate(() -> {
 
