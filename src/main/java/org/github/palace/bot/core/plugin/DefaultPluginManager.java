@@ -22,8 +22,7 @@ public class DefaultPluginManager extends AbstractPluginManager {
         for (PluginWrapper pluginWrapper : plugins) {
             Plugin plugin = null;
             try {
-                pluginWrapper.createPlugin();
-                plugin = pluginWrapper.getPlugin();
+                plugin = pluginWrapper.createPlugin();
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
             }

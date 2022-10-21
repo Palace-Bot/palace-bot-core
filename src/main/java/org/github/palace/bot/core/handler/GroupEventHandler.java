@@ -14,7 +14,7 @@ import org.github.palace.bot.core.cli.support.CommandSessionHelper;
 import org.github.palace.bot.core.constant.BaseConstant;
 import org.github.palace.bot.core.plugin.Loc;
 import org.github.palace.bot.core.plugin.PluginManager;
-import org.github.palace.bot.core.utils.MiraiCodeUtil;
+import org.github.palace.bot.core.util.MiraiCodeUtil;
 import org.github.palace.bot.data.message.entity.MessageDO;
 import org.github.palace.bot.data.message.service.MessageService;
 import org.github.palace.bot.data.message.service.impl.MessageServiceImpl;

@@ -1,4 +1,4 @@
-package org.github.palace.bot.core.utils;
+package org.github.palace.bot.core.util;
 
 /**
  * @author JHY

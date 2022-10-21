@@ -1,8 +1,11 @@
 package org.github.palace.bot.core.plugin;
 
+import org.github.palace.bot.core.loader.PluginClassLoader;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.net.URL;
 
 /**
  * @author jihongyuan
@@ -15,7 +18,7 @@ public class PluginWrapperTest {
     @Before
     public void constructor() {
         PluginProperties pluginProperties = new PluginProperties();
-        pluginWrapper = new PluginWrapper(pluginProperties, Thread.currentThread().getContextClassLoader());
+        pluginWrapper = new PluginWrapper(pluginProperties, null, new PluginClassLoader(new URL[]{}));
     }
 
     @Test

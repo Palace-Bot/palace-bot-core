@@ -1,7 +1,7 @@
 package org.github.palace.bot.core.prop;
 
 import lombok.extern.slf4j.Slf4j;
-import org.github.palace.bot.core.utils.PropertiesUtil;
+import org.github.palace.bot.core.util.PropertiesUtil;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;

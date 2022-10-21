@@ -1,4 +1,4 @@
-package org.github.palace.bot.core.utils;
+package org.github.palace.bot.core.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

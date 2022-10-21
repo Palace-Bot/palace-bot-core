@@ -8,6 +8,8 @@ import org.github.palace.bot.core.annotation.OnLoad;
 import org.github.palace.bot.core.exception.PluginException;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author jihongyuan
@@ -22,11 +24,7 @@ public class PluginDelegate extends Plugin {
      */
     private final Object delegate;
 
-    private Method onLoad;
-
-    private Method onEnable;
-
-    private Method onDisable;
+    private final Map<Class<?>, Method> pluginLifeCycleMap = new HashMap<>(3);
 
     public PluginDelegate(Application application, Class<?> delegateClass) {
         validate(application);
@@ -34,6 +32,7 @@ public class PluginDelegate extends Plugin {
         super.setVersion(application.version());
         super.setName(application.name());
         super.setDescription(application.description());
+        super.setScanBasePackages(application.scanBasePackages());
 
         this.delegateClass = delegateClass;
         try {
@@ -47,13 +46,13 @@ public class PluginDelegate extends Plugin {
             Class<?>[] parameterTypes = method.getParameterTypes();
             if (parameterTypes.length == 0) {
                 if (method.isAnnotationPresent(OnLoad.class)) {
-                    onLoad = method;
+                    pluginLifeCycleMap.put(OnLoad.class, method);
                 }
                 if (method.isAnnotationPresent(OnEnable.class)) {
-                    onEnable = method;
+                    pluginLifeCycleMap.put(OnEnable.class, method);
                 }
                 if (method.isAnnotationPresent(OnDisable.class)) {
-                    onDisable = method;
+                    pluginLifeCycleMap.put(OnDisable.class, method);
                 }
             }
         }
@@ -67,9 +66,10 @@ public class PluginDelegate extends Plugin {
 
     @Override
     public void onLoad() {
-        if (onLoad != null) {
+        Method method;
+        if ((method = pluginLifeCycleMap.get(OnLoad.class)) != null) {
             try {
-                onLoad.invoke(delegate);
+                method.invoke(delegate);
             } catch (Exception e) {
                 throw new PluginException(e);
             }
@@ -78,9 +78,10 @@ public class PluginDelegate extends Plugin {
 
     @Override
     public void onEnable() {
-        if (onEnable != null) {
+        Method method;
+        if ((method = pluginLifeCycleMap.get(OnEnable.class)) != null) {
             try {
-                onEnable.invoke(delegate);
+                method.invoke(delegate);
             } catch (Exception e) {
                 throw new PluginException(e);
             }
@@ -89,9 +90,10 @@ public class PluginDelegate extends Plugin {
 
     @Override
     public void onDisable() {
-        if (onDisable != null) {
+        Method method;
+        if ((method = pluginLifeCycleMap.get(OnDisable.class)) != null) {
             try {
-                onDisable.invoke(delegate);
+                method.invoke(delegate);
             } catch (Exception e) {
                 throw new PluginException(e);
             }

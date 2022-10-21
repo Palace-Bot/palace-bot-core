@@ -17,4 +17,6 @@ public @interface Application {
 
     String description() default "";
 
+    String[] scanBasePackages() default {};
+
 }

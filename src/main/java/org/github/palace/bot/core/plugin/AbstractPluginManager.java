@@ -7,6 +7,8 @@ import org.github.palace.bot.core.cli.CommandSender;
 import org.github.palace.bot.core.cli.CommandSession;
 import org.github.palace.bot.core.loader.PluginClassLoader;
 import org.github.palace.bot.utils.ZipUtil;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -51,6 +53,7 @@ public abstract class AbstractPluginManager implements PluginManager {
 
         for (File file : directoryChildFiles) {
             try {
+                // TODO 为什么不直接读直接读jar包呢 （ 当初咋想的？？？？
                 // (1) 解压jar包
                 String path = file.getPath();
                 if (file.getName().endsWith(".jar")) {
@@ -63,14 +66,18 @@ public abstract class AbstractPluginManager implements PluginManager {
                 // (2) 创建类加载器
                 List<URL> urls = new ArrayList<>();
                 urls.addAll(Arrays.asList(ZipUtil.getResources(path)));
+                urls.addAll(Arrays.asList(ZipUtil.getResources(path + "/classes")));
                 urls.addAll(Arrays.asList(ZipUtil.getResources(path + "/lib")));
                 PluginClassLoader pluginClassLoader = new PluginClassLoader(urls.toArray(new URL[0]));
 
                 // (3) TODO 解析jar包中配置文件
                 PluginProperties pluginProperties = new PluginProperties(pluginClassLoader);
 
-                // (4) 创建插件包装器
-                PluginWrapper pluginWrapper = new PluginWrapper(pluginProperties, pluginClassLoader);
+                // (4) 创建资源解析器
+                ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver(pluginClassLoader);
+
+                // (5) 创建插件包装器
+                PluginWrapper pluginWrapper = new PluginWrapper(pluginProperties, resourceResolver, pluginClassLoader);
 
                 log.info("load plugin: {} time: {}ms", path, System.currentTimeMillis() - start);
                 plugins.add(pluginWrapper);

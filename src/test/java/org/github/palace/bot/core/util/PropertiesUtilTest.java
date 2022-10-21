@@ -1,4 +1,4 @@
-package org.github.palace.bot.core.utils;
+package org.github.palace.bot.core.util;
 
 import org.github.palace.bot.core.plugin.PluginProperties;
 import org.junit.Assert;

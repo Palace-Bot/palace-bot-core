@@ -33,6 +33,8 @@ public class Plugin {
      */
     protected String description;
 
+    protected String[] scanBasePackages;
+
     protected Plugin() {
     }
 
