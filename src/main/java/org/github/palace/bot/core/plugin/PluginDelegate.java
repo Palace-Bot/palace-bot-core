@@ -9,8 +9,8 @@ import org.github.palace.bot.core.annotation.OnLoad;
 import org.github.palace.bot.core.exception.PluginException;
 import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +29,7 @@ public class PluginDelegate extends Plugin {
      */
     private final Object delegate;
 
-    private final Map<Class<?>, Method> pluginLifeCycleMap = new HashMap<>(3);
+    private final Map<Class<?>, Method> pluginLifeCycleMap = new HashMap<>(16);
 
     public PluginDelegate(Application application, Class<?> delegateClass) {
         validate(application);
@@ -46,6 +46,10 @@ public class PluginDelegate extends Plugin {
             throw new PluginException(e);
         }
 
+        parseLifeCycle();
+    }
+
+    protected void parseLifeCycle() {
         Method[] methods = delegateClass.getDeclaredMethods();
         for (Method method : methods) {
             Class<?>[] parameterTypes = method.getParameterTypes();
@@ -63,6 +67,22 @@ public class PluginDelegate extends Plugin {
         }
     }
 
+    protected void invokeLifeCycle(Class<?> lifeCycleClass) {
+        Method method = pluginLifeCycleMap.get(lifeCycleClass);
+
+        if (method == null) {
+            method = ReflectionUtils.findMethod(delegateClass, lifeCycleClass.getSimpleName());
+        }
+
+        if (method != null) {
+            try {
+                ReflectionUtils.invokeMethod(method, delegate);
+            } catch (Exception e) {
+                throw new PluginException(e);
+            }
+        }
+    }
+
     private void validate(Application application) {
         assert application.version() != null;
         assert application.name() != null;
@@ -71,60 +91,38 @@ public class PluginDelegate extends Plugin {
 
     @Override
     public void onLoad() {
-        Method method;
-        if ((method = pluginLifeCycleMap.get(OnLoad.class)) != null) {
-            try {
-                method.invoke(delegate);
-            } catch (Exception e) {
-                throw new PluginException(e);
-            }
-        } else {
-            try {
-                ReflectionUtils.findMethod(delegateClass, "onLoad").invoke(delegate);
-            } catch (Exception e) {
-            }
-        }
+        invokeLifeCycle(OnLoad.class);
     }
 
     @Override
     public void onEnable() {
-        Method method;
-        if ((method = pluginLifeCycleMap.get(OnEnable.class)) != null) {
-            try {
-                method.invoke(delegate);
-            } catch (Exception e) {
-                throw new PluginException(e);
-            }
-        }
+        invokeLifeCycle(OnEnable.class);
     }
 
     @Override
     public void onDisable() {
-        Method method;
-        if ((method = pluginLifeCycleMap.get(OnDisable.class)) != null) {
-            try {
-                method.invoke(delegate);
-            } catch (Exception e) {
-                throw new PluginException(e);
-            }
-        }
+        invokeLifeCycle(OnDisable.class);
     }
+
+
+    //  调用被代理类方法
 
     @Override
     public List<AbstractCommand> getCommands() {
-        try {
-            return (List<AbstractCommand>) ReflectionUtils.findMethod(delegateClass, "getCommands").invoke(delegate);
-        } catch (Exception e) {
+        Method method = ReflectionUtils.findMethod(delegateClass, "getCommands");
+        if (method == null) {
+            return Collections.emptyList();
         }
-        return null;
+        return (List<AbstractCommand>) ReflectionUtils.invokeMethod(method, delegate);
     }
 
     @Override
     protected Plugin register(AbstractCommand command) {
-        try {
-            ReflectionUtils.findMethod(delegateClass, "register", AbstractCommand.class).invoke(delegate, command);
-        } catch (Exception e) {
+        Method method = ReflectionUtils.findMethod(delegateClass, "register", AbstractCommand.class);
+        if (method != null) {
+            ReflectionUtils.invokeMethod(method, delegate, command);
         }
         return this;
     }
+
 }
