@@ -18,7 +18,8 @@ public class PluginWrapperTest {
     @Before
     public void constructor() {
         PluginProperties pluginProperties = new PluginProperties();
-        pluginWrapper = new PluginWrapper(pluginProperties, null, new PluginClassLoader(new URL[]{}));
+        // TODO
+        pluginWrapper = new PluginWrapper(pluginProperties, null, new PluginClassLoader(new URL[]{}), null);
     }
 
     @Test

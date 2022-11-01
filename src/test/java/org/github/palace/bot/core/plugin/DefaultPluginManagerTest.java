@@ -22,7 +22,7 @@ public class DefaultPluginManagerTest {
 
     @Before
     public void constructor() {
-        pluginManager = new DefaultPluginManager(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("")).getPath() + "plugins");
+        pluginManager = new DefaultPluginManager(null, Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("")).getPath() + "plugins");
     }
 
     @After

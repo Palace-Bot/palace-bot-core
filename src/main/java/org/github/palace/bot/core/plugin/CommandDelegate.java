@@ -1,8 +1,10 @@
 package org.github.palace.bot.core.plugin;
 
+import lombok.experimental.Delegate;
 import org.github.palace.bot.core.annotation.Command;
 import org.github.palace.bot.core.exception.PluginException;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -16,6 +18,7 @@ public class CommandDelegate extends AbstractCommand {
     /**
      * 代理类
      */
+    @Delegate
     private final Object delegate;
 
     protected CommandDelegate(Command command, Class<?> delegateClass) {
@@ -39,4 +42,9 @@ public class CommandDelegate extends AbstractCommand {
             }
         }
     }
+
+    public Object invoke(Method method, Object[] args) throws InvocationTargetException, IllegalAccessException {
+        return method.invoke(delegate, args);
+    }
+
 }

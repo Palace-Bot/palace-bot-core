@@ -1,6 +1,7 @@
 package org.github.palace.bot.core.cli.support;
 
 import org.github.palace.bot.core.exception.PluginException;
+import org.github.palace.bot.core.plugin.CommandDelegate;
 
 import java.lang.reflect.Method;
 
@@ -22,7 +23,11 @@ public class InvocableMethod {
 
     public Object doInvoke() {
         try {
-            return method.invoke(obj, args);
+            if (obj instanceof CommandDelegate) {
+                return ((CommandDelegate) obj).invoke(method, args);
+            } else {
+                return method.invoke(obj, args);
+            }
         } catch (Exception e) {
             throw new PluginException(e);
         }

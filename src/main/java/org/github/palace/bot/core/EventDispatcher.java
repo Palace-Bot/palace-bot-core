@@ -5,6 +5,7 @@ import net.mamoe.mirai.event.Event;
 import net.mamoe.mirai.event.GlobalEventChannel;
 import net.mamoe.mirai.event.Listener;
 import org.github.palace.bot.core.io.BotFactoriesLoader;
+import org.github.palace.bot.core.plugin.PluginManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,10 @@ public class EventDispatcher {
     private final List<EventHandler<Event>> handlers = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
-    public EventDispatcher() {
+    public EventDispatcher(PluginManager pluginManager) {
+        pluginManager.load();
+        pluginManager.start();
+
         ClassLoader classLoader = EventDispatcher.class.getClassLoader();
         List<String> handlerNames = BotFactoriesLoader.loadFactoryNames(EventDispatcher.class, classLoader);
 
@@ -32,7 +36,8 @@ public class EventDispatcher {
             try {
                 Class<?> clazz = classLoader.loadClass(handlerClass);
                 EventHandler<Event> eventHandler = (EventHandler<Event>) clazz.getDeclaredConstructor().newInstance();
-                this.handlers.add(eventHandler);
+                eventHandler.setPluginManager(pluginManager);
+                handlers.add(eventHandler);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
             }

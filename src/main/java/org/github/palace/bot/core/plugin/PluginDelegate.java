@@ -120,6 +120,7 @@ public class PluginDelegate extends Plugin {
     protected Plugin register(AbstractCommand command) {
         Method method = ReflectionUtils.findMethod(delegateClass, "register", AbstractCommand.class);
         if (method != null) {
+            method.setAccessible(true);
             ReflectionUtils.invokeMethod(method, delegate, command);
         }
         return this;

@@ -1,7 +1,9 @@
 package org.github.palace.bot.core.plugin;
 
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.MemberPermission;
 import org.github.palace.bot.core.cli.CommandSender;
 import org.github.palace.bot.core.cli.CommandSession;
@@ -26,25 +28,23 @@ import java.util.*;
 @Slf4j
 public abstract class AbstractPluginManager implements PluginManager {
 
-    /**
-     * 插件目录
-     */
+    @Getter
+    protected final Bot bot;
+
+    /**  插件目录 */
     protected final String pluginPath;
 
-    /**
-     * 命令管理器
-     */
-    @Setter
+    /** 命令管理器 */
     protected CommandExecutor commandExecutor = new CommandExecutor();
 
     /**
      * 插件集合
      */
-    protected final List<PluginWrapper> plugins;
+    protected final List<PluginWrapper> plugins = new ArrayList<>();;
 
-    protected AbstractPluginManager(String pluginPath) {
+    protected AbstractPluginManager(Bot bot, String pluginPath) {
+        this.bot = bot;
         this.pluginPath = pluginPath;
-        this.plugins = new ArrayList<>();
     }
 
     @Override
@@ -77,9 +77,9 @@ public abstract class AbstractPluginManager implements PluginManager {
                 ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver(pluginClassLoader);
 
                 // (5) 创建插件包装器
-                PluginWrapper pluginWrapper = new PluginWrapper(pluginProperties, resourceResolver, pluginClassLoader);
+                PluginWrapper pluginWrapper = new PluginWrapper(pluginProperties, resourceResolver, pluginClassLoader, this);
 
-                log.info("load plugin: {} time: {}ms", path, System.currentTimeMillis() - start);
+                log.info("Load plugin: {} time: {}ms", path, System.currentTimeMillis() - start);
                 plugins.add(pluginWrapper);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);

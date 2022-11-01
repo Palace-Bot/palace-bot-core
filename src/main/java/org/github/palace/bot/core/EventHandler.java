@@ -1,6 +1,7 @@
 package org.github.palace.bot.core;
 
 import net.mamoe.mirai.event.Event;
+import org.github.palace.bot.core.plugin.PluginManager;
 
 /**
  * @author JHY
@@ -15,6 +16,9 @@ public interface EventHandler<E extends Event> {
      * @param event mirai event
      */
     void onEvent(E event);
+
+    default void setPluginManager(PluginManager pluginManager) {
+    }
 
     /**
      * 获取处理器支持的event

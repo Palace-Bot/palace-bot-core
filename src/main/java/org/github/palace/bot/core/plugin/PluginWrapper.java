@@ -30,11 +30,12 @@ import java.util.concurrent.ScheduledExecutorService;
 @Slf4j
 public class PluginWrapper implements LifeCycle {
 
-    /**
-     * plugin properties
-     */
+    private final AbstractPluginManager abstractPluginManager;
+
+    /** plugin properties */
     private final PluginProperties properties;
 
+    /** plugin class loader */
     private final PluginClassLoader pluginLoader;
 
     private final CommandManager commandManager;
@@ -48,26 +49,22 @@ public class PluginWrapper implements LifeCycle {
     // spring提供
     // 本来想自己写太难了，还是决定用spring
 
-    /**
-     * 资源解析器
-     */
+    /** 资源解析器  */
     private final ResourcePatternResolver resourceResolver;
 
-    /**
-     * 注解类型过滤器
-     */
+    /** 注解类型过滤器 */
     private final List<TypeFilter> includeFilters = new ArrayList<>();
 
-    /**
-     * 元数据读取器工厂
-     */
+    /** 元数据读取器工厂 */
     private MetadataReaderFactory metadataReaderFactory;
 
-    public PluginWrapper(PluginProperties properties, ResourcePatternResolver resourceResolver, PluginClassLoader pluginLoader) {
+    public PluginWrapper(PluginProperties properties, ResourcePatternResolver resourceResolver, PluginClassLoader pluginLoader, AbstractPluginManager abstractPluginManager) {
         this.properties = properties;
         this.pluginLoader = pluginLoader;
         this.resourceResolver = resourceResolver;
         this.commandManager = new CommandManager(properties.commandPrefix, this);
+        this.commandManager.setBot(abstractPluginManager.getBot());
+        this.abstractPluginManager = abstractPluginManager;
 
         // 注册过滤器
         registerDefaultFilter();
@@ -92,6 +89,7 @@ public class PluginWrapper implements LifeCycle {
                     throw new PluginException("Plugin main class must extends from Plugin or annotated with @Application");
                 }
                 plugin.onLoad();
+                // 处理注解
                 onLoadInternal();
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
@@ -121,7 +119,7 @@ public class PluginWrapper implements LifeCycle {
     private void onLoadInternal() {
         String[] scanBasePackages = plugin.getScanBasePackages();
 
-        if(scanBasePackages == null || scanBasePackages.length == 0) return;
+        if (scanBasePackages == null || scanBasePackages.length == 0) return;
 
         // 加载 包扫描路径
         Set<Resource> resources = new LinkedHashSet<>();
