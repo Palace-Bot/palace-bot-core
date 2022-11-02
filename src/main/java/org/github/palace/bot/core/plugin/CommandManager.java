@@ -29,6 +29,8 @@ public class CommandManager implements LifeCycle {
 
     private final PluginWrapper plugin;
 
+    private Bot bot;
+
     @Getter
     private final Set<AbstractCommand> commands = new HashSet<>();
 
@@ -55,11 +57,11 @@ public class CommandManager implements LifeCycle {
     @Override
     public void start() {
         for (AbstractCommand command : commands) {
-            log.debug("start command: {}", command.getPrimaryName());
+            log.debug("Command: {}, PrimaryName: {}", command.getClass().getSimpleName(), command.getPrimaryName());
             Map<Method, CommandPusher> commandPushMethodMap = command.getCommandPusherMethodMap();
             commandPushMethodMap.forEach((method, commandPusher) -> plugin.getPusherExecutorService().scheduleAtFixedRate(() -> {
 
-                ParameterResolver resolver = new ParameterResolver(Loc.get(Bot.class));
+                ParameterResolver resolver = new ParameterResolver(bot);
                 Object[] args = resolver.resolver(method.getParameterTypes());
                 InvocableMethod invocableMethod = new InvocableMethod(command, method, args);
                 try {
@@ -73,6 +75,10 @@ public class CommandManager implements LifeCycle {
 
     @Override
     public void stop() {
+    }
+
+    public void setBot(Bot bot) {
+        this.bot = bot;
     }
 
 }

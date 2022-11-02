@@ -1,6 +1,5 @@
 package org.github.palace.bot.core.plugin;
 
-import net.mamoe.mirai.contact.MemberPermission;
 import org.github.palace.bot.core.cli.CommandSender;
 import org.github.palace.bot.core.cli.CommandSession;
 import org.github.palace.bot.core.cli.support.InvocableMethod;

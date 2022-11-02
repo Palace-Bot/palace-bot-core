@@ -1,12 +1,16 @@
 package org.github.palace.bot.core.plugin;
 
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.MemberPermission;
 import org.github.palace.bot.core.cli.CommandSender;
 import org.github.palace.bot.core.cli.CommandSession;
 import org.github.palace.bot.core.loader.PluginClassLoader;
 import org.github.palace.bot.utils.ZipUtil;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -24,25 +28,23 @@ import java.util.*;
 @Slf4j
 public abstract class AbstractPluginManager implements PluginManager {
 
-    /**
-     * 插件目录
-     */
+    @Getter
+    protected final Bot bot;
+
+    /**  插件目录 */
     protected final String pluginPath;
 
-    /**
-     * 命令管理器
-     */
-    @Setter
+    /** 命令管理器 */
     protected CommandExecutor commandExecutor = new CommandExecutor();
 
     /**
      * 插件集合
      */
-    protected final List<PluginWrapper> plugins;
+    protected final List<PluginWrapper> plugins = new ArrayList<>();;
 
-    protected AbstractPluginManager(String pluginPath) {
+    protected AbstractPluginManager(Bot bot, String pluginPath) {
+        this.bot = bot;
         this.pluginPath = pluginPath;
-        this.plugins = new ArrayList<>();
     }
 
     @Override
@@ -51,6 +53,7 @@ public abstract class AbstractPluginManager implements PluginManager {
 
         for (File file : directoryChildFiles) {
             try {
+                // TODO 为什么不直接读直接读jar包呢 （ 当初咋想的？？？？
                 // (1) 解压jar包
                 String path = file.getPath();
                 if (file.getName().endsWith(".jar")) {
@@ -63,16 +66,20 @@ public abstract class AbstractPluginManager implements PluginManager {
                 // (2) 创建类加载器
                 List<URL> urls = new ArrayList<>();
                 urls.addAll(Arrays.asList(ZipUtil.getResources(path)));
+                urls.addAll(Arrays.asList(ZipUtil.getResources(path + "/classes")));
                 urls.addAll(Arrays.asList(ZipUtil.getResources(path + "/lib")));
                 PluginClassLoader pluginClassLoader = new PluginClassLoader(urls.toArray(new URL[0]));
 
                 // (3) TODO 解析jar包中配置文件
                 PluginProperties pluginProperties = new PluginProperties(pluginClassLoader);
 
-                // (4) 创建插件包装器
-                PluginWrapper pluginWrapper = new PluginWrapper(pluginProperties, pluginClassLoader);
+                // (4) 创建资源解析器
+                ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver(pluginClassLoader);
 
-                log.info("load plugin: {} time: {}ms", path, System.currentTimeMillis() - start);
+                // (5) 创建插件包装器
+                PluginWrapper pluginWrapper = new PluginWrapper(pluginProperties, resourceResolver, pluginClassLoader, this);
+
+                log.info("Load plugin: {} time: {}ms", path, System.currentTimeMillis() - start);
                 plugins.add(pluginWrapper);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);

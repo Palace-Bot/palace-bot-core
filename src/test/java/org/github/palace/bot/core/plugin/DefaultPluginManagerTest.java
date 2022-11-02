@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.io.FileUtils;
@@ -21,7 +22,7 @@ public class DefaultPluginManagerTest {
 
     @Before
     public void constructor() {
-        pluginManager = new DefaultPluginManager(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("")).getPath());
+        pluginManager = new DefaultPluginManager(null, Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("")).getPath() + "plugins");
     }
 
     @After
@@ -29,7 +30,7 @@ public class DefaultPluginManagerTest {
         pluginManager.stop();
         pluginManager = null;
         System.gc();
-        String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("")).getPath() + PLUGIN_NAME;
+        String path = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("")).getPath() + "plugins" + PLUGIN_NAME;
         File file = new File(path);
         FileUtils.deleteDirectory(file);
     }
@@ -38,12 +39,14 @@ public class DefaultPluginManagerTest {
     @Test
     public void testLoad() {
         pluginManager.load();
-
     }
 
-    // TODO
     @Test
-    public void testStart(){
+    public void testStart() {
+        pluginManager.load();
+        pluginManager.start();
 
+        List<PluginWrapper> plugins = pluginManager.plugins;
+        System.out.println();
     }
 }

@@ -3,6 +3,7 @@ package org.github.palace.bot.core.loader;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.*;
+import java.util.Objects;
 
 /**
  * 插件lib类加载器
@@ -47,6 +48,17 @@ public class PluginClassLoader extends URLClassLoader {
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
         return super.findClass(name);
+    }
+
+    public URL getResource(String name) {
+        Objects.requireNonNull(name);
+        URL url = findResource(name);
+
+        if (url == null) {
+            return super.getResource(name);
+        }
+
+        return url;
     }
 
 }

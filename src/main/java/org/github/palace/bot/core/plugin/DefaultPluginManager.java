@@ -1,7 +1,7 @@
 package org.github.palace.bot.core.plugin;
 
 import lombok.extern.slf4j.Slf4j;
-import org.github.palace.bot.core.LifeCycle;
+import net.mamoe.mirai.Bot;
 
 /**
  * @author jihongyuan
@@ -10,8 +10,8 @@ import org.github.palace.bot.core.LifeCycle;
 @Slf4j
 public class DefaultPluginManager extends AbstractPluginManager {
 
-    public DefaultPluginManager(String pluginPath) {
-        super(pluginPath);
+    public DefaultPluginManager(Bot bot, String pluginPath) {
+        super(bot, pluginPath);
     }
 
     /**
@@ -19,11 +19,12 @@ public class DefaultPluginManager extends AbstractPluginManager {
      */
     @Override
     public void start() {
+        bot.login();
+
         for (PluginWrapper pluginWrapper : plugins) {
             Plugin plugin = null;
             try {
-                pluginWrapper.createPlugin();
-                plugin = pluginWrapper.getPlugin();
+                plugin = pluginWrapper.createPlugin();
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
             }
