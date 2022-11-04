@@ -42,6 +42,16 @@ public class CommandManager implements LifeCycle {
     @Nullable
     public AbstractCommand matchCommand(String commandName) {
         for (AbstractCommand command : commands) {
+            String[] split = commandName.split(" ");
+            if(split.length >= 2 ){
+                return matchCommand(split[0]);
+            }
+
+            split = commandName.split(",");
+            if(split.length >= 2 ){
+                return matchCommand(split[0]);
+            }
+
             if (commandName.equals(commandPrefix + command.getPrimaryName())) {
                 return command;
             }

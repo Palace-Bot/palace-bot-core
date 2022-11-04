@@ -1,9 +1,7 @@
 package org.github.palace.bot.core.plugin;
 
 import org.github.palace.bot.core.loader.PluginClassLoader;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.net.URL;
 
@@ -22,11 +20,4 @@ public class PluginWrapperTest {
         pluginWrapper = new PluginWrapper(pluginProperties, null, new PluginClassLoader(new URL[]{}), null);
     }
 
-    @Test
-    public void createPlugin() {
-        pluginWrapper.createPlugin();
-
-        Plugin plugin = pluginWrapper.getPlugin();
-        Assert.assertNotNull(plugin);
-    }
 }

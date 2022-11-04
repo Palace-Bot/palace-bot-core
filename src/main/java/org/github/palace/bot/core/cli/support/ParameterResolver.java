@@ -16,10 +16,11 @@ public class ParameterResolver {
     /**
      * 参数解析器
      */
-    private static Set<Resolver> resolvers;
+    private static final Set<Resolver> resolvers;
 
     static {
-        resolvers = Set.of(new CommandSenderResolver(), new BotResolver(), new ContactResolver(), new UserResolver(), new StringResolver(), new CommandSessionResolver());
+        resolvers = Set.of(new CommandSenderResolver(), new BotResolver(), new ContactResolver(),
+                new UserResolver(), new StringResolver(), new CommandSessionResolver(), new StringArrayResolver());
     }
 
     public ParameterResolver(Object... data) {

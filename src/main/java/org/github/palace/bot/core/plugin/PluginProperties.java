@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.github.palace.bot.core.prop.AbstractProperties;
 
 /**
+ * TODO 写的真他吗的蠢
+ *
  * @author jihongyuan
  * @date 2022/5/14 21:14
  */
@@ -19,7 +21,7 @@ public class PluginProperties extends AbstractProperties {
 
     public String version;
 
-    public String commandPrefix = "/";
+    public static String commandPrefix = "/";
 
     public PluginProperties() {
         super(DEFAULT_PROPERTIES_FILE_NAME);

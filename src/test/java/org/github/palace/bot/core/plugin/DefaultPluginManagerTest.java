@@ -2,11 +2,9 @@ package org.github.palace.bot.core.plugin;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.io.FileUtils;
@@ -35,18 +33,4 @@ public class DefaultPluginManagerTest {
         FileUtils.deleteDirectory(file);
     }
 
-    // TODO
-    @Test
-    public void testLoad() {
-        pluginManager.load();
-    }
-
-    @Test
-    public void testStart() {
-        pluginManager.load();
-        pluginManager.start();
-
-        List<PluginWrapper> plugins = pluginManager.plugins;
-        System.out.println();
-    }
 }
